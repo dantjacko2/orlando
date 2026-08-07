@@ -1,0 +1,9 @@
+{
+  "name": "orlando",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {"dev":"vite","build":"vite build","preview":"vite preview"},
+  "dependencies": {"@supabase/supabase-js":"^2.55.0","vite":"^7.0.0"},
+  "devDependencies": {}
+}
