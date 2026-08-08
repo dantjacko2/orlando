@@ -72,7 +72,21 @@ St Helens
 Both
 </button>
 
-</div></p>${loading?'<div class="empty">Loading photos…</div>':`<div class="gallery">${photos.filter(p=>p.kind==='general').map(photoCard).join('')}</div>${photos.filter(p=>p.kind==='general').length?'':'<div class="empty">📸<br><b>No trip photos yet</b><br>Add the first Orlando memory.</div>'}`}</main>`}
+</div></p>${loading?'<div class="empty">Loading photos…</div>':`<div class="gallery">${photos.filter(
+  p =>
+    p.kind === 'general' &&
+    (
+      photoFilter === 'all' ||
+      p.family_name === photoFilter
+    )
+).map(photoCard).join('')}</div>${photos.filter(
+  p =>
+    p.kind === 'general' &&
+    (
+      photoFilter === 'all' ||
+      p.family_name === photoFilter
+    )
+).length?'':'<div class="empty">📸<br><b>No trip photos yet</b><br>Add the first Orlando memory.</div>'}`}</main>`}
 function photoUrl(p){return supabase?.storage.from('trip-photos').getPublicUrl(p.storage_path).data.publicUrl||''}
 function photoCard(p){const u=photoUrl(p);return `<article class="photoCard"><img src="${u}" alt="${esc(p.caption||'Orlando photo')}" loading="lazy"><div class="photoInfo"><b>${esc(p.caption||'Orlando memory')}</b><div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><a class="download" href="${u}" target="_blank" download>↧ Open / download</a></div></article>`}
 function foodView(){const items=photos.filter(p=>p.kind==='food'&&(foodFilter==='all'||String(p.rating)===foodFilter));return `<main>${setupNote()}<div class="galleryHead"><div><div class="eyebrow">Holiday taste test</div><h2 class="pageTitle" style="margin-bottom:0">Food gallery</h2></div><button class="roundAdd" data-add="food">＋</button></div><p style="color:#64748b;font-size:13px">Snap it, name it and give it a star rating.</p><div class="filters2">${['all','5','4','3','2','1'].map(x=>`<button data-food-filter="${x}" class="${foodFilter===x?'on':''}">${x==='all'?'All food':`${x} ★`}</button>`).join('')}</div>${loading?'<div class="empty">Loading food…</div>':items.map(foodCard).join('')}${!items.length&&!loading?'<div class="empty">🍽️<br><b>No food photos yet</b><br>Be the first holiday food critic.</div>':''}</main>`}
