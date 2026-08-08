@@ -1,6 +1,6 @@
 import './style.css';
 import { createClient } from '@supabase/supabase-js';
-import { schedule as seedSchedule, slotNames, locationMeta, families } from './data.js';
+import { schedule as seedSchedule, slotNames, locationMeta, families, familyBookings } from './data.js';
 
 const url=import.meta.env.VITE_SUPABASE_URL, key=import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 const configured=Boolean(url&&key&&!url.includes('YOUR_PROJECT'));
@@ -55,42 +55,19 @@ function plans(){const d=schedule.find(x=>x.date===selected)||schedule[0], ovs=o
 function slot(d,k,overlap){return `<section class="slot"><div class="slotTitle">${{m:'🌅',a:'☀️',e:'🌙'}[k]} ${slotNames[k]} ${overlap?'<span class="overlapPill">Overlap</span>':''}</div>${family('p','peterborough',families.peterborough,d.p[k],d.pDetails?.[k]||'',d.date,k)}${family('s','sthelens',families.sthelens,d.s[k],d.sDetails?.[k]||'',d.date,k)}</section>`}
 function getFamilyEvents(date, family){
 
-  const day = schedule.find(x => x.date === date);
+  const bookings =
+    familyBookings[date];
 
-  if(!day) return [];
+  if(!bookings){
+    return [];
+  }
 
-  return day.events.filter(e => {
-
-    if(family === 'peterborough'){
-
-      return (
-        e.startsWith('Peterborough:') ||
-        e.includes("Leo’s 1st haircut") ||
-        e.includes("Leo's 1st haircut") ||
-        e.includes("Leo’s first haircut") ||
-        e.includes("Leo's first haircut")
-      );
-
-    }
-
-    if(family === 'sthelens'){
-
-      return e.startsWith('St Helens:');
-
-    }
-
-    return false;
-
-  });
+  return family === 'peterborough'
+    ? (bookings.p || [])
+    : (bookings.s || []);
 
 }
-
-function cleanEvent(event){
-
-  return event
-    .replace('Peterborough: ','')
-    .replace('St Helens: ','');
-}
+``
 function family(cls,id,name,where,details,date,slot){
 
   const familyEvents =
@@ -122,7 +99,7 @@ ${familyEvents.length
 
 ${familyEvents.map(event => `
 <div>
-🎟️ ${esc(cleanEvent(event))}
+🎟️ ${esc(event)}
 </div>
 `).join('')}
 
