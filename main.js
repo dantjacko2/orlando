@@ -37,7 +37,8 @@ let tab='plans',
     photos=[],
     loading=false,
     rating=5,
-    foodFilter='all';
+    foodFilter='all',
+    photoFilter='all';
 let unlocked=!configured||localStorage.getItem('orlando-access')==='granted';
 let schedule=structuredClone(seedSchedule);
 const $=s=>document.querySelector(s); const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
