@@ -33,6 +33,166 @@ export const schedule = [
  d("2026-09-02",{}, {m:"Travel",a:"Home",e:"Home"}, ["St Helens arrive 9:40 am"]),
  d("2026-09-03",{}, {}, [])
 ];
+export const familyBookings = {
+
+  "2026-08-14": {
+    p: [],
+    s: [
+      "Flight 9:15am",
+      "Arrive 1:45pm",
+      "Walmart / Target",
+      "Chili's / Cheesecake Factory"
+    ]
+  },
+
+  "2026-08-15": {
+    p: [],
+    s: [
+      "Big Thunder 8:50am",
+      "Buzz 9:35am",
+      "Pirates 10:15am",
+      "Crystal Palace 11:30am",
+      "TRON 1:00pm"
+    ]
+  },
+
+  "2026-08-16": {
+    p: [],
+    s: [
+      "Teppan Edo 5:10pm",
+      "Guardians 7:05pm"
+    ]
+  },
+
+  "2026-08-17": {
+    p: [],
+    s: [
+      "Hollywood & Vine 4:50pm",
+      "Fantasmic"
+    ]
+  },
+
+  "2026-08-18": {
+    p: [],
+    s: [
+      "Disney Springs / Outlets"
+    ]
+  },
+
+  "2026-08-19": {
+    p: [],
+    s: [
+      "Ohana 6:50pm",
+      "Fireworks from Polynesian"
+    ]
+  },
+
+  "2026-08-20": {
+    p: [],
+    s: [
+      "Slinky 9:15am",
+      "Toy Story Mania 10:15am",
+      "Tower of Terror 11:15am",
+      "Roundup Rodeo 5:30pm"
+    ]
+  },
+
+  "2026-08-21": {
+    p: [],
+    s: [
+      "Steakhouse 71 5:00pm"
+    ]
+  },
+
+  "2026-08-22": {
+    p: [
+      "Homecomin' 6:15pm"
+    ],
+    s: [
+      "Chef Art Smith's 6:15pm"
+    ]
+  },
+
+  "2026-08-23": {
+    p: [],
+    s: [
+      "Boma 5:30pm"
+    ]
+  },
+
+  "2026-08-24": {
+    p: [
+      "Beak & Barrel 4:20pm"
+    ],
+    s: [
+      "Topolino's 9:00am"
+    ]
+  },
+
+  "2026-08-25": {
+    p: [],
+    s: [
+      "Be Our Guest 5:30pm"
+    ]
+  },
+
+  "2026-08-26": {
+    p: [
+      "Leo's first haircut",
+      "Wailulu Grill"
+    ],
+    s: [
+      "Slinky 9:00am",
+      "Toy Story Mania 9:45am",
+      "Tower of Terror 10:45am",
+      "Cinderella's Royal Table 7:00pm",
+      "Happily Ever After"
+    ]
+  },
+
+  "2026-08-27": {
+    p: [],
+    s: [
+      "Food & Wine",
+      "Whispering Canyon 6:00pm"
+    ]
+  },
+
+  "2026-08-28": {
+    p: [],
+    s: [
+      "Cruise embarkation"
+    ]
+  },
+
+  "2026-08-29": {
+    p: [
+      "Yak & Yeti"
+    ],
+    s: [
+      "Royal Gathering 9:45am"
+    ]
+  },
+
+  "2026-08-31": {
+    p: [
+      "Keke's / First Watch"
+    ],
+    s: [
+      "Disembark",
+      "Hollywood Studios → EPCOT",
+      "Eat to the Beat"
+    ]
+  },
+
+  "2026-09-01": {
+    p: [],
+    s: [
+      "Flight 8:30pm"
+    ]
+  }
+
+};
 export const explicitOverlaps = {
  "2026-08-21":["m"], "2026-08-22":["m","e"], "2026-08-24":["m"], "2026-08-25":["a"], "2026-08-31":["a","e"]
 };
