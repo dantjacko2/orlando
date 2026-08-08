@@ -56,20 +56,25 @@ function family(cls,id,name,where,details,date,slot){return `<div class="familyR
 function setupNote(){return configured?'':`<div class="setup"><b>Preview mode:</b> Connect Supabase using the two Vercel environment variables to activate shared uploads.</div>`}
 function photosView(){return `<main>${setupNote()}<div class="galleryHead"><div><div class="eyebrow">Shared memories</div><h2 class="pageTitle" style="margin-bottom:0">Photo gallery</h2></div><button class="roundAdd" data-add="general">＋</button></div><p style="color:#64748b;font-size:13px">Everyone with the link can view, upload and download.<div class="filters2">
 
-<button data-photo-filter="all">
+<button
+  data-photo-filter="all"
+  class="${photoFilter==='all'?'on':''}"
+>
 All
 </button>
 
-<button data-photo-filter="Peterborough Jacksons">
+<button
+  data-photo-filter="Peterborough Jacksons"
+  class="${photoFilter==='Peterborough Jacksons'?'on':''}"
+>
 Peterborough
 </button>
 
-<button data-photo-filter="St Helens Jacksons">
+<button
+  data-photo-filter="St Helens Jacksons"
+  class="${photoFilter==='St Helens Jacksons'?'on':''}"
+>
 St Helens
-</button>
-
-<button data-photo-filter="Both families">
-Both
 </button>
 
 </div></p>${loading?'<div class="empty">Loading photos…</div>':`<div class="gallery">${photos.filter(
