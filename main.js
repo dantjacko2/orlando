@@ -54,7 +54,25 @@ function plans(){const d=schedule.find(x=>x.date===selected)||schedule[0], ovs=o
 function slot(d,k,overlap){return `<section class="slot"><div class="slotTitle">${{m:'🌅',a:'☀️',e:'🌙'}[k]} ${slotNames[k]} ${overlap?'<span class="overlapPill">Overlap</span>':''}</div>${family('p','peterborough',families.peterborough,d.p[k],d.pDetails?.[k]||'',d.date,k)}${family('s','sthelens',families.sthelens,d.s[k],d.sDetails?.[k]||'',d.date,k)}</section>`}
 function family(cls,id,name,where,details,date,slot){return `<div class="familyRow"><span class="familyDot ${cls}"></span><div><div class="familyName">${name}</div><div style="margin-top:5px">${place(where)}</div>${details?`<div class="activityDetails">${esc(details)}</div>`:''}</div>${configured?`<button class="editActivity" data-edit="${id}" data-date="${date}" data-slot="${slot}" aria-label="Edit ${name}">✎</button>`:''}</div>`}
 function setupNote(){return configured?'':`<div class="setup"><b>Preview mode:</b> Connect Supabase using the two Vercel environment variables to activate shared uploads.</div>`}
-function photosView(){return `<main>${setupNote()}<div class="galleryHead"><div><div class="eyebrow">Shared memories</div><h2 class="pageTitle" style="margin-bottom:0">Photo gallery</h2></div><button class="roundAdd" data-add="general">＋</button></div><p style="color:#64748b;font-size:13px">Everyone with the link can view, upload and download.</p>${loading?'<div class="empty">Loading photos…</div>':`<div class="gallery">${photos.filter(p=>p.kind==='general').map(photoCard).join('')}</div>${photos.filter(p=>p.kind==='general').length?'':'<div class="empty">📸<br><b>No trip photos yet</b><br>Add the first Orlando memory.</div>'}`}</main>`}
+function photosView(){return `<main>${setupNote()}<div class="galleryHead"><div><div class="eyebrow">Shared memories</div><h2 class="pageTitle" style="margin-bottom:0">Photo gallery</h2></div><button class="roundAdd" data-add="general">＋</button></div><p style="color:#64748b;font-size:13px">Everyone with the link can view, upload and download.<div class="filters2">
+
+<button data-photo-filter="all">
+All
+</button>
+
+<button data-photo-filter="Peterborough Jacksons">
+Peterborough
+</button>
+
+<button data-photo-filter="St Helens Jacksons">
+St Helens
+</button>
+
+<button data-photo-filter="Both families">
+Both
+</button>
+
+</div></p>${loading?'<div class="empty">Loading photos…</div>':`<div class="gallery">${photos.filter(p=>p.kind==='general').map(photoCard).join('')}</div>${photos.filter(p=>p.kind==='general').length?'':'<div class="empty">📸<br><b>No trip photos yet</b><br>Add the first Orlando memory.</div>'}`}</main>`}
 function photoUrl(p){return supabase?.storage.from('trip-photos').getPublicUrl(p.storage_path).data.publicUrl||''}
 function photoCard(p){const u=photoUrl(p);return `<article class="photoCard"><img src="${u}" alt="${esc(p.caption||'Orlando photo')}" loading="lazy"><div class="photoInfo"><b>${esc(p.caption||'Orlando memory')}</b><div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><a class="download" href="${u}" target="_blank" download>↧ Open / download</a></div></article>`}
 function foodView(){const items=photos.filter(p=>p.kind==='food'&&(foodFilter==='all'||String(p.rating)===foodFilter));return `<main>${setupNote()}<div class="galleryHead"><div><div class="eyebrow">Holiday taste test</div><h2 class="pageTitle" style="margin-bottom:0">Food gallery</h2></div><button class="roundAdd" data-add="food">＋</button></div><p style="color:#64748b;font-size:13px">Snap it, name it and give it a star rating.</p><div class="filters2">${['all','5','4','3','2','1'].map(x=>`<button data-food-filter="${x}" class="${foodFilter===x?'on':''}">${x==='all'?'All food':`${x} ★`}</button>`).join('')}</div>${loading?'<div class="empty">Loading food…</div>':items.map(foodCard).join('')}${!items.length&&!loading?'<div class="empty">🍽️<br><b>No food photos yet</b><br>Be the first holiday food critic.</div>':''}</main>`}
