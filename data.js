@@ -33,43 +33,6 @@ export const schedule = [
  d("2026-09-02",{}, {m:"Travel",a:"Home",e:"Home"}, ["St Helens arrive 9:40 am"]),
  d("2026-09-03",{}, {}, [])
 ];
-function outsideTrip(date, start, end) {
-  return date < start || date > end;
-}
-
-schedule.forEach(day => {
-
-  // Peterborough Jacksons
-  if (
-    outsideTrip(
-      day.date,
-      "2026-08-20",
-      "2026-09-03"
-    )
-  ) {
-    day.p = {
-      m: "Home",
-      a: "Home",
-      e: "Home"
-    };
-  }
-
-  // St Helens Jacksons
-  if (
-    outsideTrip(
-      day.date,
-      "2026-08-14",
-      "2026-09-01"
-    )
-  ) {
-    day.s = {
-      m: "Home",
-      a: "Home",
-      e: "Home"
-    };
-  }
-
-});
 export const explicitOverlaps = {
  "2026-08-21":["m"], "2026-08-22":["m","e"], "2026-08-24":["m"], "2026-08-25":["a"], "2026-08-31":["a","e"]
 };
