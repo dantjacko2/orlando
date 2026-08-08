@@ -53,7 +53,101 @@ function nav(){return `<nav class="tabs"><button data-tab="plans" class="${tab==
 function overlapsFor(d){return ['m','a','e'].filter(k=>d.p[k]===d.s[k]&&d.p[k]!=="Flexible time");}
 function plans(){const d=schedule.find(x=>x.date===selected)||schedule[0], ovs=overlapsFor(d);return `<main>${setupNote()}<div class="eyebrow">Shared schedule</div><h2 class="pageTitle">Where is everyone?</h2><div class="days">${schedule.map(x=>{const [w,n]=short(x.date);return `<button class="day ${x.date===selected?'on':''}" data-date="${x.date}">${overlapsFor(x).length?'<i class="overlapDot"></i>':''}<small>${w}</small><b>${n}</b></button>`}).join('')}</div><div class="dateTitle"><b>${fmt(d.date)}</b><small>Morning · afternoon · evening</small></div>${ovs.length?`<div class="overlapBanner"><div><strong>⭐ OVERLAP</strong><h3>${ovs.map(k=>slotNames[k]).join(' + ')}</h3></div></div>`:''}${['m','a','e'].map(k=>slot(d,k,ovs.includes(k))).join('')}${d.events.length?`<section class="events"><h3>🎟️ Bookings & highlights</h3>${d.events.map(e=>`<div>${esc(e)}</div>`).join('')}</section>`:''}</main>`}
 function slot(d,k,overlap){return `<section class="slot"><div class="slotTitle">${{m:'🌅',a:'☀️',e:'🌙'}[k]} ${slotNames[k]} ${overlap?'<span class="overlapPill">Overlap</span>':''}</div>${family('p','peterborough',families.peterborough,d.p[k],d.pDetails?.[k]||'',d.date,k)}${family('s','sthelens',families.sthelens,d.s[k],d.sDetails?.[k]||'',d.date,k)}</section>`}
-function family(cls,id,name,where,details,date,slot){return `<div class="familyRow"><span class="familyDot ${cls}"></span><div><div class="familyName">${name}</div><div style="margin-top:5px">${place(where)}</div>${details?`<div class="activityDetails">${esc(details)}</div>`:''}</div>${configured?`<button class="editActivity" data-edit="${id}" data-date="${date}" data-slot="${slot}" aria-label="Edit ${name}">✎</button>`:''}</div>`}
+function getFamilyEvents(date, family){
+
+  const day = schedule.find(x => x.date === date);
+
+  if(!day) return [];
+
+  return day.events.filter(e => {
+
+    if(family === 'peterborough'){
+
+      return (
+        e.startsWith('Peterborough:') ||
+        e.includes("Leo’s 1st haircut") ||
+        e.includes("Leo's 1st haircut") ||
+        e.includes("Leo’s first haircut") ||
+        e.includes("Leo's first haircut")
+      );
+
+    }
+
+    if(family === 'sthelens'){
+
+      return e.startsWith('St Helens:');
+
+    }
+
+    return false;
+
+  });
+
+}
+
+function cleanEvent(event){
+
+  return event
+    .replace('Peterborough: ','')
+    .replace('St Helens: ','');
+}
+function family(cls,id,name,where,details,date,slot){
+
+  const familyEvents =
+    getFamilyEvents(date,id);
+
+  return `
+<div class="familyRow">
+
+<span class="familyDot ${cls}"></span>
+
+<div>
+
+<div class="familyName">
+${name}
+</div>
+
+<div style="margin-top:5px">
+${place(where)}
+</div>
+
+${details
+  ? `<div class="activityDetails">${esc(details)}</div>`
+  : ''
+}
+
+${familyEvents.length
+  ? `
+<div class="familyEvents">
+
+${familyEvents.map(event => `
+<div>
+🎟️ ${esc(cleanEvent(event))}
+</div>
+`).join('')}
+
+</div>
+`
+  : ''
+}
+
+</div>
+
+${configured
+  ? `<button
+      class="editActivity"
+      data-edit="${id}"
+      data-date="${date}"
+      data-slot="${slot}"
+      aria-label="Edit ${name}"
+    >✎</button>`
+  : ''
+}
+
+</div>
+`;
+
+}
 function setupNote(){return configured?'':`<div class="setup"><b>Preview mode:</b> Connect Supabase using the two Vercel environment variables to activate shared uploads.</div>`}
 function photosView(){return `<main>${setupNote()}<div class="galleryHead"><div><div class="eyebrow">Shared memories</div><h2 class="pageTitle" style="margin-bottom:0">Photo gallery</h2></div><button class="roundAdd" data-add="general">＋</button></div><p style="color:#64748b;font-size:13px">Everyone with the link can view, upload and download.<div class="filters2">
 
