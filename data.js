@@ -34,82 +34,45 @@ export const schedule = [
  d("2026-09-03",{}, {}, [])
 ];
 function outsideTrip(date, start, end) {
-2
-return date < start || date > end;
-3
+  return date < start || date > end;
 }
-4
- 
-5
+
 schedule.forEach(day => {
-6
- 
-7
-if (
-8
-outsideTrip(
-9
-day.date,
-10
-"2026-08-20",
-11
-"2026-09-03"
-12
-)
-13
-) {
-14
- 
-15
-day.p = {
-16
-m: "Home",
-17
-a: "Home",
-18
-e: "Home"
-19
-};
-20
- 
-21
-}
-22
- 
-23
-if (
-24
-outsideTrip(
-25
-day.date,
-26
-"2026-08-14",
-27
-"2026-09-01"
-28
-)
-29
-) {
-30
- 
-31
-day.s = {
-32
-m: "Home",
-33
-a: "Home",
-34
-e: "Home"
-35
-};
-36
- 
-37
-}
-38
- 
-39
+
+  if (
+    outsideTrip(
+      day.date,
+      "2026-08-20",
+      "2026-09-03"
+    )
+  ) {
+
+    day.p = {
+      m: "Home",
+      a: "Home",
+      e: "Home"
+    };
+
+  }
+
+  if (
+    outsideTrip(
+      day.date,
+      "2026-08-14",
+      "2026-09-01"
+    )
+  ) {
+
+    day.s = {
+      m: "Home",
+      a: "Home",
+      e: "Home"
+    };
+
+  }
+
 });
+
 export const explicitOverlaps = {
  "2026-08-21":["m"], "2026-08-22":["m","e"], "2026-08-24":["m"], "2026-08-25":["a"], "2026-08-31":["a","e"]
 };
