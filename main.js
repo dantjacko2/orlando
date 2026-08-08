@@ -62,7 +62,33 @@ function uploadModal(kind){const food=kind==='food';return `<div class="modal"><
 function editModal(){const d=schedule.find(x=>x.date===editing.date),key=editing.family==='peterborough'?'p':'s',detailsKey=key==='p'?'pDetails':'sDetails';return `<div class="modal"><div class="sheet"><button class="close" data-close-edit>×</button><h2>✏️ Edit ${editing.family==='peterborough'?families.peterborough:families.sthelens}</h2><p class="editContext">${fmt(editing.date)} · ${slotNames[editing.slot]}</p><form id="editForm"><label>Activity or location</label><input name="location" required value="${esc(d[key][editing.slot])}" placeholder="e.g. EPCOT"><label>Details or time</label><textarea name="details" placeholder="Optional details">${esc(d[detailsKey]?.[editing.slot]||'')}</textarea><label>Universal editing PIN</label><input name="pin" type="password" inputmode="numeric" required autocomplete="off" placeholder="6-digit PIN"><button class="primary" type="submit">Save for everyone</button></form></div></div>`}
 function render(){if(!unlocked){document.querySelector('#app').innerHTML=accessScreen();const access=$('#accessForm');if(access)access.onsubmit=unlockApp;return}document.querySelector('#app').innerHTML=`<div class="shell">${header()}${tab==='plans'?plans():tab==='photos'?photosView():foodView()}${nav()}</div>${modal?uploadModal(modal):''}${editing?editModal():''}`;bind()}
 function bind(){document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;modal=null;editing=null;render();if(tab!=='plans')loadPhotos()});document.querySelectorAll('[data-date]').forEach(b=>b.onclick=()=>{selected=b.dataset.date;render()});document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{if(!configured)return toast('Connect Supabase first');modal=b.dataset.add;rating=5;render()});document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{modal=null;render()});document.querySelectorAll('[data-close-edit]').forEach(b=>b.onclick=()=>{editing=null;render()});document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>{editing={family:b.dataset.edit,date:b.dataset.date,slot:b.dataset.slot};render()});document.querySelectorAll('[data-rating]').forEach(b=>b.onclick=()=>{rating=+b.dataset.rating;render()});document.querySelectorAll('[data-food-filter]').forEach(b=>b.onclick=()=>{foodFilter=b.dataset.foodFilter;render()});const form=$('#uploadForm');if(form)form.onsubmit=upload;const edit=$('#editForm');if(edit)edit.onsubmit=saveSchedule}
-async function loadSchedule(){if(!configured)return;const {data,error}=await supabase.from('schedule_slots').select('*');if(error){toast('Schedule connection: '+error.message);return}for(const row of data||[]){const d=schedule.find(x=>x.date===row.trip_date);if(!d)continue;const k=row.family_id==='peterborough'?'p':'s',dk=k==='p'?'pDetails':'sDetails';d[k][row.slot]=row.location;d[dk]??={m:'',a:'',e:''};d[dk][row.slot]=row.details||''}render()}
+async function loadSchedule(){if(!configured)return;const {data,error}=await supabase.from('schedule_slots').select('*');if(error){toast('Schedule connection: '+error.message);return}for(const row of data||[]){const d=schedule.find(x=>x.date===row.trip_date);if(!d)continue;const k=row.family_id==='peterborough'?'p':'s',dk=k==='p'?'pDetails':'sDetails';d[k][row.slot]=row.location;d[dk]??={m:'',a:'',e:''};d[dk][row.slot]=row.details||''}schedule.forEach(day => {
+
+  // Peterborough Jacksons
+  if (
+    day.date < "2026-08-20" ||
+    day.date > "2026-09-03"
+  ) {
+    day.p = {
+      m: "Home",
+      a: "Home",
+      e: "Home"
+    };
+  }
+
+  // St Helens Jacksons
+  if (
+    day.date < "2026-08-14" ||
+    day.date > "2026-09-01"
+  ) {
+    day.s = {
+      m: "Home",
+      a: "Home",
+      e: "Home"
+    };
+  }
+
+});render()}
 async function saveSchedule(e){e.preventDefault();const fd=new FormData(e.target);const args={p_trip_date:editing.date,p_family_id:editing.family,p_slot:editing.slot,p_location:fd.get('location'),p_details:fd.get('details'),p_pin:fd.get('pin')};const {error}=await supabase.rpc('edit_schedule_slot',args);if(error){toast(error.message.includes('Incorrect')?'Incorrect universal PIN':error.message);return}editing=null;toast('Schedule updated for everyone');await loadSchedule()}
 async function loadPhotos(){if(!configured)return;loading=true;render();const {data,error}=await supabase.from('trip_photos').select('*').order('created_at',{ascending:false});loading=false;if(error)toast(error.message);else photos=data||[];render()}
 async function resize(file){const bitmap=await createImageBitmap(file);const max=1800,s=Math.min(1,max/Math.max(bitmap.width,bitmap.height));const c=document.createElement('canvas');c.width=Math.round(bitmap.width*s);c.height=Math.round(bitmap.height*s);c.getContext('2d').drawImage(bitmap,0,0,c.width,c.height);return await new Promise(r=>c.toBlob(r,'image/jpeg',.84))}
