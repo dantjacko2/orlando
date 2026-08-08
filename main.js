@@ -38,6 +38,7 @@ let tab='plans',
     loading=false,
     rating=5,
     foodFilter='all',
+    foodFamily='all',
     photoFilter='all';
 let unlocked=!configured||localStorage.getItem('orlando-access')==='granted';
 let schedule=structuredClone(seedSchedule);
@@ -94,12 +95,123 @@ St Helens
 ).length?'':'<div class="empty">📸<br><b>No trip photos yet</b><br>Add the first Orlando memory.</div>'}`}</main>`}
 function photoUrl(p){return supabase?.storage.from('trip-photos').getPublicUrl(p.storage_path).data.publicUrl||''}
 function photoCard(p){const u=photoUrl(p);return `<article class="photoCard"><img src="${u}" alt="${esc(p.caption||'Orlando photo')}" loading="lazy"><div class="photoInfo"><b>${esc(p.caption||'Orlando memory')}</b><div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><a class="download" href="${u}" target="_blank" download>↧ Open / download</a></div></article>`}
-function foodView(){const items=photos.filter(p=>p.kind==='food'&&(foodFilter==='all'||String(p.rating)===foodFilter));return `<main>${setupNote()}<div class="galleryHead"><div><div class="eyebrow">Holiday taste test</div><h2 class="pageTitle" style="margin-bottom:0">Food gallery</h2></div><button class="roundAdd" data-add="food">＋</button></div><p style="color:#64748b;font-size:13px">Snap it, name it and give it a star rating.</p><div class="filters2">${['all','5','4','3','2','1'].map(x=>`<button data-food-filter="${x}" class="${foodFilter===x?'on':''}">${x==='all'?'All food':`${x} ★`}</button>`).join('')}</div>${loading?'<div class="empty">Loading food…</div>':items.map(foodCard).join('')}${!items.length&&!loading?'<div class="empty">🍽️<br><b>No food photos yet</b><br>Be the first holiday food critic.</div>':''}</main>`}
-function foodCard(p){const u=photoUrl(p);return `<article class="foodCard"><img src="${u}" alt="${esc(p.dish||'Food photo')}" loading="lazy"><div class="foodBody"><div class="stars">${'★'.repeat(p.rating)}<span style="color:#e5e7eb">${'★'.repeat(5-p.rating)}</span></div><h3>${esc(p.dish||'Mystery treat')}</h3><div style="color:#7e22ce;font-weight:900;margin-top:3px">🍴 ${esc(p.restaurant||'Orlando')}</div>${p.notes?`<p>${esc(p.notes)}</p>`:''}<div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><a class="download" href="${u}" target="_blank" download>↧ Open / download</a></div></article>`}
+function foodView(){
+
+  const items = photos.filter(
+    p =>
+      p.kind === 'food' &&
+      (
+        foodFilter === 'all' ||
+        String(p.rating) === foodFilter
+      ) &&
+      (
+        foodFamily === 'all' ||
+        p.family_name === foodFamily
+      )
+  );
+
+  return `
+<main>
+
+${setupNote()}
+
+<div class="galleryHead">
+
+<div>
+<div class="eyebrow">Holiday taste test</div>
+<h2 class="pageTitle" style="margin-bottom:0">
+Food gallery
+</h2>
+</div>
+
+<button class="roundAdd" data-add="food">
+＋
+</button>
+
+</div>
+
+<p style="color:#64748b;font-size:13px">
+Snap it, name it and give it a star rating.
+</p>
+
+<div class="filters2">
+
+${['all','5','4','3','2','1']
+  .map(x => `
+<button
+  data-food-filter="${x}"
+  class="${foodFilter===x?'on':''}"
+>
+${x==='all'?'All food':`${x} ★`}
+</button>
+`)
+.join('')}
+
+</div>
+
+<div class="filters2">
+
+<button
+  data-food-family="all"
+  class="${foodFamily==='all'?'on':''}"
+>
+All families
+</button>
+
+<button
+  data-food-family="Peterborough Jacksons"
+  class="${foodFamily==='Peterborough Jacksons'?'on':''}"
+>
+Peterborough
+</button>
+
+<button
+  data-food-family="St Helens Jacksons"
+  class="${foodFamily==='St Helens Jacksons'?'on':''}"
+>
+St Helens
+</button>
+
+</div>
+
+${loading
+  ? '<div class="empty">Loading food…</div>'
+  : items.map(foodCard).join('')
+}
+
+${
+  !items.length && !loading
+    ? '<div class="empty">🍽️<br><b>No food photos yet</b><br>Be the first holiday food critic.</div>'
+    : ''
+}
+
+</main>
+`;
+}function foodCard(p){const u=photoUrl(p);return `<article class="foodCard"><img src="${u}" alt="${esc(p.dish||'Food photo')}" loading="lazy"><div class="foodBody"><div class="stars">${'★'.repeat(p.rating)}<span style="color:#e5e7eb">${'★'.repeat(5-p.rating)}</span></div><h3>${esc(p.dish||'Mystery treat')}</h3><div style="color:#7e22ce;font-weight:900;margin-top:3px">🍴 ${esc(p.restaurant||'Orlando')}</div>${p.notes?`<p>${esc(p.notes)}</p>`:''}<div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><a class="download" href="${u}" target="_blank" download>↧ Open / download</a></div></article>`}
 function uploadModal(kind){const food=kind==='food';return `<div class="modal"><div class="sheet"><button class="close" data-close>×</button><h2>${food?'🍽️ Add food review':'📸 Add a memory'}</h2><form id="uploadForm"><label>Photo</label><input name="file" type="file" accept="image/*" required><label>Who is posting?</label><select name="family"><option>Peterborough Jacksons</option><option>St Helens Jacksons</option><option>Both families</option></select>${food?`<label>Restaurant or location</label><input name="restaurant" required placeholder="e.g. Homecomin’"><label>Dish or drink</label><input name="dish" required placeholder="e.g. Fried chicken"><label>Star rating</label><div class="starPicker">${[1,2,3,4,5].map(n=>`<button type="button" data-rating="${n}" class="${n<=rating?'on':''}">★</button>`).join('')}</div><label>Review</label><textarea name="notes" placeholder="What made it great?"></textarea>`:`<label>Caption</label><textarea name="caption" placeholder="What’s happening?"></textarea>`}<button class="primary" type="submit">Upload for everyone</button><div id="progress"></div></form></div></div>`}
 function editModal(){const d=schedule.find(x=>x.date===editing.date),key=editing.family==='peterborough'?'p':'s',detailsKey=key==='p'?'pDetails':'sDetails';return `<div class="modal"><div class="sheet"><button class="close" data-close-edit>×</button><h2>✏️ Edit ${editing.family==='peterborough'?families.peterborough:families.sthelens}</h2><p class="editContext">${fmt(editing.date)} · ${slotNames[editing.slot]}</p><form id="editForm"><label>Activity or location</label><input name="location" required value="${esc(d[key][editing.slot])}" placeholder="e.g. EPCOT"><label>Details or time</label><textarea name="details" placeholder="Optional details">${esc(d[detailsKey]?.[editing.slot]||'')}</textarea><label>Universal editing PIN</label><input name="pin" type="password" inputmode="numeric" required autocomplete="off" placeholder="6-digit PIN"><button class="primary" type="submit">Save for everyone</button></form></div></div>`}
 function render(){if(!unlocked){document.querySelector('#app').innerHTML=accessScreen();const access=$('#accessForm');if(access)access.onsubmit=unlockApp;return}document.querySelector('#app').innerHTML=`<div class="shell">${header()}${tab==='plans'?plans():tab==='photos'?photosView():foodView()}${nav()}</div>${modal?uploadModal(modal):''}${editing?editModal():''}`;bind()}
-function bind(){document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;modal=null;editing=null;render();if(tab!=='plans')loadPhotos()});document.querySelectorAll('[data-date]').forEach(b=>b.onclick=()=>{selected=b.dataset.date;render()});document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{if(!configured)return toast('Connect Supabase first');modal=b.dataset.add;rating=5;render()});document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{modal=null;render()});document.querySelectorAll('[data-close-edit]').forEach(b=>b.onclick=()=>{editing=null;render()});document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>{editing={family:b.dataset.edit,date:b.dataset.date,slot:b.dataset.slot};render()});document.querySelectorAll('[data-rating]').forEach(b=>b.onclick=()=>{rating=+b.dataset.rating;render()});document.querySelectorAll('[data-food-filter]').forEach(b=>b.onclick=()=>{foodFilter=b.dataset.foodFilter;render()});document.querySelectorAll('[data-photo-filter]').forEach(b=>{
+function bind(){document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;modal=null;editing=null;render();if(tab!=='plans')loadPhotos()});document.querySelectorAll('[data-date]').forEach(b=>b.onclick=()=>{selected=b.dataset.date;render()});document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{if(!configured)return toast('Connect Supabase first');modal=b.dataset.add;rating=5;render()});document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{modal=null;render()});document.querySelectorAll('[data-close-edit]').forEach(b=>b.onclick=()=>{editing=null;render()});document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>{editing={family:b.dataset.edit,date:b.dataset.date,slot:b.dataset.slot};render()});document.querySelectorAll('[data-rating]').forEach(b=>b.onclick=()=>{rating=+b.dataset.rating;render()});document.querySelectorAll('[data-food-filter]').forEach(b=>b.onclick=()=>{foodFilter=b.dataset.foodFilter;render()});document.querySelectorAll('[data-food-family]').forEach(b=>{
+2
+ 
+3
+b.onclick=()=>{
+4
+ 
+5
+foodFamily=b.dataset.foodFamily;
+6
+ 
+7
+render();
+8
+ 
+9
+};
+10
+ 
+11
+});document.querySelectorAll('[data-photo-filter]').forEach(b=>{
 
   b.onclick=()=>{
 
