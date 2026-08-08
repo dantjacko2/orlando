@@ -5,7 +5,39 @@ import { schedule as seedSchedule, slotNames, locationMeta, families } from './d
 const url=import.meta.env.VITE_SUPABASE_URL, key=import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 const configured=Boolean(url&&key&&!url.includes('YOUR_PROJECT'));
 const supabase=configured?createClient(url,key):null;
-let tab='plans', selected='2026-08-20', modal=null, editing=null, photos=[], loading=false, rating=5, foodFilter='all';
+const tripDates = seedSchedule
+  .map(x => x.date)
+  .sort();
+
+function getDefaultDate() {
+
+  const today = new Date();
+
+  const todayString =
+    today.toISOString().slice(0,10);
+
+  if (tripDates.includes(todayString)) {
+    return todayString;
+  }
+
+  if (todayString < tripDates[0]) {
+    return tripDates[0];
+  }
+
+  return tripDates[
+    tripDates.length - 1
+  ];
+
+}
+
+let tab='plans',
+    selected=getDefaultDate(),
+    modal=null,
+    editing=null,
+    photos=[],
+    loading=false,
+    rating=5,
+    foodFilter='all';
 let unlocked=!configured||localStorage.getItem('orlando-access')==='granted';
 let schedule=structuredClone(seedSchedule);
 const $=s=>document.querySelector(s); const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
