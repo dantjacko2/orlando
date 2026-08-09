@@ -107,3 +107,11 @@ linear-gradient(
   font-size:12px;
   color:#334155;
 }
+
+.bookingItem{
+  cursor:pointer;
+}
+
+.bookingItem:hover{
+  opacity:.8;
+}
