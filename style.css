@@ -37,10 +37,10 @@ linear-gradient(
 }
 .heroCastle{
   position:absolute;
-  right:-10px;
-  bottom:-30px;
-  font-size:120px;
-  opacity:.10;
+  right:-15px;
+  bottom:-35px;
+  font-size:150px;
+  opacity:.14;
   pointer-events:none;
 }
 
