@@ -880,9 +880,12 @@ async function saveBooking(e){
 
         slot:
           bookingModal.slot,
+        
+title:
+  fd.get('title'),
 
-        title:
-          fd.get('title')
+category:
+  fd.get('category')
 
       });
 
