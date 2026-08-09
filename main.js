@@ -32,7 +32,7 @@ function getDefaultDate() {
 
 let bookings=[],
     bookingModal=null,
-    bookingToDelete=null,
+    bookingToEdit=null,
     tab='plans',
     selected=getDefaultDate(),
     modal=null,
@@ -278,33 +278,100 @@ ${
 </main>
 `;
 }function foodCard(p){const u=photoUrl(p);return `<article class="foodCard"><img src="${u}" alt="${esc(p.dish||'Food photo')}" loading="lazy"><div class="foodBody"><div class="stars">${'★'.repeat(p.rating)}<span style="color:#e5e7eb">${'★'.repeat(5-p.rating)}</span></div><h3>${esc(p.dish||'Mystery treat')}</h3><div style="color:#7e22ce;font-weight:900;margin-top:3px">🍴 ${esc(p.restaurant||'Orlando')}</div>${p.notes?`<p>${esc(p.notes)}</p>`:''}<div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><a class="download" href="${u}" target="_blank" download>↧ Open / download</a></div></article>`}
-function deleteBookingModal(){
+function bookingEditModal(){
 
   return `
 <div class="modal">
 
 <div class="sheet">
 
+<button
+  class="close"
+  data-close-booking-edit
+>
+×
+</button>
+
 <h2>
-Delete booking?
+✏️ Edit booking
 </h2>
 
-<p>
-This booking will be removed.
-</p>
+<form id="editBookingForm">
+
+<label>
+Booking title
+</label>
+
+<input
+  name="title"
+  required
+  value="${esc(bookingToEdit.title)}"
+>
+
+<label>
+Date
+</label>
+
+<select name="trip_date">
+
+${schedule.map(day=>`
+
+<option
+value="${day.date}"
+${day.date===bookingToEdit.trip_date?'selected':''}
+>
+${fmt(day.date)}
+</option>
+
+`).join('')}
+
+</select>
+
+<label>
+Time of day
+</label>
+
+<select name="slot">
+
+<option value="m"
+${bookingToEdit.slot==='m'?'selected':''}>
+Morning
+</option>
+
+<option value="a"
+${bookingToEdit.slot==='a'?'selected':''}>
+Afternoon
+</option>
+
+<option value="e"
+${bookingToEdit.slot==='e'?'selected':''}>
+Evening
+</option>
+
+</select>
 
 <button
   class="primary"
-  id="confirmDeleteBooking"
+  type="submit"
+>
+Save changes
+</button>
+
+<button
+  type="button"
+  class="primary"
+  id="deleteBookingBtn"
+  style="margin-top:10px;background:#b91c1c"
 >
 Delete booking
 </button>
+
+</form>
 
 </div>
 
 </div>
 `;
-
 }
 
 function bookingModalView(){
@@ -353,7 +420,7 @@ function editModal(){const d=schedule.find(x=>x.date===editing.date),key=editing
 function render(){if(!unlocked){document.querySelector('#app').innerHTML=accessScreen();const access=$('#accessForm');if(access)access.onsubmit=unlockApp;return}document.querySelector('#app').innerHTML=`<div class="shell">${header()}${tab==='plans'?plans():tab==='photos'?photosView():foodView()}${nav()}</div>${modal?uploadModal(modal):''}
 ${editing?editModal():''}
 ${bookingModal?bookingModalView():''}
-${bookingToDelete?deleteBookingModal():''}`;bind()}
+${bookingToEdit?bookingEditModal():''}`;bind()}
 function bind(){
 
   document.querySelectorAll('[data-tab]').forEach(b=>{
@@ -436,6 +503,20 @@ function bind(){
       };
 
     });
+
+  document
+  .querySelectorAll('[data-close-booking-edit]')
+  .forEach(b=>{
+
+    b.onclick=()=>{
+
+      bookingToEdit=null;
+
+      render();
+
+    };
+
+  });
 
   document.querySelectorAll('[data-close]').forEach(b=>{
 
@@ -530,8 +611,10 @@ document
 
   b.onclick=()=>{
 
-    bookingToDelete=
-      b.dataset.bookingId;
+    bookingToEdit=
+      bookings.find(
+        x => x.id === b.dataset.bookingId
+      );
 
     render();
 
@@ -553,8 +636,18 @@ if(bookingForm){
   bookingForm.onsubmit=saveBooking;
 }
 
+const editBookingForm=
+  $('#editBookingForm');
+
+if(editBookingForm){
+
+  editBookingForm.onsubmit=
+    updateBooking;
+
+}
+
 const deleteBtn=
-  $('#confirmDeleteBooking');
+  $('#deleteBookingBtn');
 
 if(deleteBtn){
 
@@ -621,7 +714,7 @@ async function deleteBooking(){
     await supabase
       .from('family_bookings')
       .delete()
-      .eq('id',bookingToDelete);
+      .eq('id',bookingToEdit.id);
 
   if(error){
 
@@ -631,7 +724,45 @@ async function deleteBooking(){
 
   }
 
+  bookingToEdit=null;
+
+  await loadBookings();
+
+}
+
   bookingToDelete=null;
+
+  await loadBookings();
+
+}
+async function updateBooking(e){
+
+  e.preventDefault();
+
+  const fd =
+    new FormData(e.target);
+
+  const {error} =
+    await supabase
+      .from('family_bookings')
+      .update({
+
+        title:fd.get('title'),
+        trip_date:fd.get('trip_date'),
+        slot:fd.get('slot')
+
+      })
+      .eq('id',bookingToEdit.id);
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+
+  }
+
+  bookingToEdit=null;
 
   await loadBookings();
 
