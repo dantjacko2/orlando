@@ -730,10 +730,6 @@ async function deleteBooking(){
 
 }
 
-  bookingToDelete=null;
-
-  await loadBookings();
-
 }
 async function updateBooking(e){
 
