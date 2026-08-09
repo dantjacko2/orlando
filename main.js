@@ -435,6 +435,30 @@ Booking title
   placeholder="e.g. Cinderella's Royal Table"
 >
 
+<label>
+Category
+</label>
+
+<select name="category">
+
+  <option value="food">Dining</option>
+
+  <option value="ride">Ride</option>
+
+  <option value="show">Show</option>
+
+  <option value="travel">Travel</option>
+
+  <option value="cruise">Cruise</option>
+
+  <option value="hotel">Hotel</option>
+
+  <option value="experience">Experience</option>
+
+  <option value="other">Other</option>
+
+</select>
+
 <button class="primary" type="submit">
 Save booking
 </button>
