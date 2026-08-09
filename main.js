@@ -725,7 +725,7 @@ async function deleteBooking(){
   }
 
   bookingToEdit=null;
-
+  toast('Booking deleted');
   await loadBookings();
 
 }
@@ -758,7 +758,7 @@ async function updateBooking(e){
   }
 
   bookingToEdit=null;
-
+  toast('Booking updated');
   await loadBookings();
 
 }
