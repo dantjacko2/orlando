@@ -107,13 +107,31 @@ ${familyEvents.map(event => `
 </div>
 
 ${configured
-  ? `<button
-      class="editActivity"
-      data-edit="${id}"
-      data-date="${date}"
-      data-slot="${slot}"
-      aria-label="Edit ${name}"
-    >✎</button>`
+  ? `
+<div style="display:flex;gap:6px">
+
+<button
+  class="editActivity"
+  data-add-booking="${id}"
+  data-date="${date}"
+  data-slot="${slot}"
+  aria-label="Add booking"
+>
+＋
+</button>
+
+<button
+  class="editActivity"
+  data-edit="${id}"
+  data-date="${date}"
+  data-slot="${slot}"
+  aria-label="Edit ${name}"
+>
+✎
+</button>
+
+</div>
+`
   : ''
 }
 
