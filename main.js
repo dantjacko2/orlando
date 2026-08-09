@@ -52,7 +52,7 @@ function header(){return `<header class="hero"><div class="heroTop"><span class=
 function overlapsFor(d){return ['m','a','e'].filter(k=>d.p[k]===d.s[k]&&d.p[k]!=="Flexible time");}
 function plans(){const d=schedule.find(x=>x.date===selected)||schedule[0], ovs=overlapsFor(d);return `<main>${setupNote()}<div class="eyebrow">Shared schedule</div><h2 class="pageTitle">Where is everyone?</h2><div class="days">${schedule.map(x=>{const [w,n]=short(x.date);return `<button class="day ${x.date===selected?'on':''}" data-date="${x.date}">${overlapsFor(x).length?'<i class="overlapDot"></i>':''}<small>${w}</small><b>${n}</b></button>`}).join('')}</div><div class="dateTitle"><b>${fmt(d.date)}</b><small>Morning · afternoon · evening</small></div>${ovs.length?`<div class="overlapBanner"><div><strong>⭐ OVERLAP</strong><h3>${ovs.map(k=>slotNames[k]).join(' + ')}</h3></div></div>`:''}${['m','a','e'].map(k=>slot(d,k,ovs.includes(k))).join('')}</main>`}
 function slot(d,k,overlap){return `<section class="slot"><div class="slotTitle">${{m:'🌅',a:'☀️',e:'🌙'}[k]} ${slotNames[k]} ${overlap?'<span class="overlapPill">Overlap</span>':''}</div>${family('p','peterborough',families.peterborough,d.p[k],d.pDetails?.[k]||'',d.date,k)}${family('s','sthelens',families.sthelens,d.s[k],d.sDetails?.[k]||'',d.date,k)}</section>`}
-function getFamilyEvents(date, family){
+function getFamilyEvents(date, family, slot){
 
   const bookings =
     familyBookings[date];
@@ -61,16 +61,18 @@ function getFamilyEvents(date, family){
     return [];
   }
 
-  return family === 'peterborough'
-    ? (bookings.p || [])
-    : (bookings.s || []);
+  if(family === 'peterborough'){
+    return bookings.p?.[slot] || [];
+  }
+
+  return bookings.s?.[slot] || [];
 
 }
 ``
 function family(cls,id,name,where,details,date,slot){
 
   const familyEvents =
-    getFamilyEvents(date,id);
+    getFamilyEvents(date,id,slot);
 
   return `
 <div class="familyRow">
