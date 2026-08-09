@@ -50,6 +50,22 @@ const $=s=>document.querySelector(s); const esc=s=>String(s??'').replace(/[&<>"'
 const fmt=d=>new Intl.DateTimeFormat('en-GB',{weekday:'long',day:'numeric',month:'long'}).format(new Date(d+'T12:00:00'));
 const short=d=>{const x=new Date(d+'T12:00:00');return [x.toLocaleDateString('en-GB',{weekday:'short'}),x.getDate()]};
 function place(name){const [icon,cls]=locationMeta[name]||['📍',''];return `<span class="placeBadge ${cls}"><span>${icon}</span>${esc(name)}</span>`}
+function bookingIcon(category){
+
+  return {
+
+    food:'🍽️',
+    ride:'🎢',
+    show:'🎭',
+    travel:'✈️',
+    cruise:'🚢',
+    hotel:'🏨',
+    experience:'✂️',
+    other:'🎟️'
+
+  }[category] || '🎟️';
+
+}
 function accessScreen(){return `<div class="accessGate"><div class="accessGlow one"></div><div class="accessGlow two"></div><div class="accessCard"><div class="accessIcon">🎡</div><div class="eyebrow">Private Orlando space</div><h1>Welcome to Orlando</h1><p>Enter the shared access PIN to view plans, photographs and food reviews.</p><form id="accessForm"><label>Access PIN</label><input name="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" required autocomplete="off" placeholder="6-digit PIN" autofocus><button class="primary" type="submit">Unlock Orlando</button><div id="accessError" class="accessError"></div></form></div></div>`}
 async function unlockApp(e){e.preventDefault();const pin=new FormData(e.target).get('pin');const button=e.target.querySelector('button');button.disabled=true;button.textContent='Checking…';const {data,error}=await supabase.rpc('verify_access_pin',{p_pin:pin});if(error||data!==true){button.disabled=false;button.textContent='Unlock Orlando';const box=$('#accessError');if(box)box.textContent='That PIN is not correct. Please try again.';return}localStorage.setItem('orlando-access','granted');unlocked=true;render();loadSchedule()}
 function header(){return `<header class="hero"><div class="heroTop"><span class="tag">✨ 🏰 Orlando 2026</span></div><h1>Orlando</h1><div class="sub">Peterborough Jacksons + St Helens Jacksons</div><div class="dates">📅 14 August – 3 September 2026</div><div class="heroFireworks">✦ ✨ ✦ ✨ ✦</div><div class="heroCastle">🏰</div></header>`}function nav(){return `<nav class="tabs"><button data-tab="plans" class="${tab==='plans'?'on':''}">📍 Plans</button><button data-tab="photos" class="${tab==='photos'?'on':''}">📸 Photos</button><button data-tab="food" class="${tab==='food'?'on':''}">🍽️ Food</button></nav>`}
@@ -131,7 +147,7 @@ ${familyEvents.map(event => `
   class="bookingItem"
   data-booking-id="${event.id}"
 >
-🎟️ ${esc(event.title)}
+${bookingIcon(event.category)} ${esc(event.title)}
 </div>
 `).join('')}
 
