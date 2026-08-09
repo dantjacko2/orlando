@@ -95,7 +95,10 @@ ${familyEvents.length
 <div class="familyEvents">
 
 ${familyEvents.map(event => `
-<div>
+<div
+  class="bookingItem"
+  data-booking-id="${event.id}"
+>
 🎟️ ${esc(event.title)}
 </div>
 `).join('')}
