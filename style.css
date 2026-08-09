@@ -115,3 +115,82 @@ linear-gradient(
 .bookingItem:hover{
   opacity:.8;
 }
+
+.weatherCard{
+
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+
+  gap:10px;
+
+  margin:14px 0 18px;
+
+}
+
+.weatherItem{
+
+  background:#fff;
+
+  border-radius:16px;
+
+  padding:12px;
+
+  text-align:center;
+
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
+
+}
+
+.weatherItem span{
+
+  display:block;
+
+  font-size:22px;
+
+}
+
+.weatherItem b{
+
+  display:block;
+
+  margin-top:4px;
+
+  font-size:18px;
+
+}
+
+.weatherItem small{
+
+  color:#64748b;
+
+}
+
+.weatherItem.sun{
+  border-top:4px solid #f59e0b;
+}
+
+.weatherItem.temp{
+  border-top:4px solid #3b82f6;
+}
+
+.weatherItem.rain{
+  border-top:4px solid #14b8a6;
+}
+
+.weatherUnavailable{
+
+  margin:14px 0 18px;
+
+  padding:14px;
+
+  border-radius:16px;
+
+  background:#fff;
+
+  text-align:center;
+
+  color:#64748b;
+
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
+
+}
