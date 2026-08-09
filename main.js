@@ -813,4 +813,34 @@ if(configured&&unlocked){
   loadBookings();
 
 }
-if(configured){supabase.channel('schedule-live').on('postgres_changes',{event:'UPDATE',schema:'public',table:'schedule_slots'},()=>{if(unlocked)loadSchedule()}).subscribe()}
+if(configured){
+
+  supabase.channel('schedule-live')
+    .on(
+      'postgres_changes',
+      {
+        event:'UPDATE',
+        schema:'public',
+        table:'schedule_slots'
+      },
+      ()=>{
+        if(unlocked)loadSchedule()
+      }
+    )
+    .subscribe();
+
+  supabase.channel('booking-live')
+    .on(
+      'postgres_changes',
+      {
+        event:'*',
+        schema:'public',
+        table:'family_bookings'
+      },
+      ()=>{
+        if(unlocked)loadBookings()
+      }
+    )
+    .subscribe();
+
+}
