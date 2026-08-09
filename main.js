@@ -730,7 +730,6 @@ async function deleteBooking(){
 
 }
 
-}
 async function updateBooking(e){
 
   e.preventDefault();
