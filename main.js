@@ -30,7 +30,8 @@ function getDefaultDate() {
 
 }
 
-let bookings=[],
+let weatherData={},
+    bookings=[],
     bookingModal=null,
     bookingToEdit=null,
     tab='plans',
@@ -53,7 +54,37 @@ function accessScreen(){return `<div class="accessGate"><div class="accessGlow o
 async function unlockApp(e){e.preventDefault();const pin=new FormData(e.target).get('pin');const button=e.target.querySelector('button');button.disabled=true;button.textContent='Checking…';const {data,error}=await supabase.rpc('verify_access_pin',{p_pin:pin});if(error||data!==true){button.disabled=false;button.textContent='Unlock Orlando';const box=$('#accessError');if(box)box.textContent='That PIN is not correct. Please try again.';return}localStorage.setItem('orlando-access','granted');unlocked=true;render();loadSchedule()}
 function header(){return `<header class="hero"><div class="heroTop"><span class="tag">✨ 🏰 Orlando 2026</span></div><h1>Orlando</h1><div class="sub">Peterborough Jacksons + St Helens Jacksons</div><div class="dates">📅 14 August – 3 September 2026</div><div class="heroFireworks">✦ ✨ ✦ ✨ ✦</div><div class="heroCastle">🏰</div></header>`}function nav(){return `<nav class="tabs"><button data-tab="plans" class="${tab==='plans'?'on':''}">📍 Plans</button><button data-tab="photos" class="${tab==='photos'?'on':''}">📸 Photos</button><button data-tab="food" class="${tab==='food'?'on':''}">🍽️ Food</button></nav>`}
 function overlapsFor(d){return ['m','a','e'].filter(k=>d.p[k]===d.s[k]&&d.p[k]!=="Flexible time");}
-function plans(){const d=schedule.find(x=>x.date===selected)||schedule[0], ovs=overlapsFor(d);return `<main>${setupNote()}<div class="eyebrow">Shared schedule</div><h2 class="pageTitle">Where is everyone?</h2><div class="days">${schedule.map(x=>{const [w,n]=short(x.date);return `<button class="day ${x.date===selected?'on':''}" data-date="${x.date}">${overlapsFor(x).length?'<i class="overlapDot"></i>':''}<small>${w}</small><b>${n}</b></button>`}).join('')}</div><div class="dateTitle"><b>${fmt(d.date)}</b><small>Morning · afternoon · evening</small></div>${ovs.length?`<div class="overlapBanner"><div><strong>⭐ OVERLAP</strong><h3>${ovs.map(k=>slotNames[k]).join(' + ')}</h3></div></div>`:''}${['m','a','e'].map(k=>slot(d,k,ovs.includes(k))).join('')}</main>`}
+function plans(){const d=schedule.find(x=>x.date===selected)||schedule[0], ovs=overlapsFor(d);return `<main>${setupNote()}<div class="eyebrow">Shared schedule</div><h2 class="pageTitle">Where is everyone?</h2><div class="days">${schedule.map(x=>{const [w,n]=short(x.date);return `<button class="day ${x.date===selected?'on':''}" data-date="${x.date}">${overlapsFor(x).length?'<i class="overlapDot"></i>':''}<small>${w}</small><b>${n}</b></button>`}).join('')}</div><div class="dateTitle"><b>${fmt(d.date)}</b><small>Morning · afternoon · evening</small></div>${weatherData[d.date]
+? `
+<div class="weatherCard">
+
+  <div class="weatherItem sun">
+    <span>☀️</span>
+    <b>${Math.round(weatherData[d.date].high)}°</b>
+    <small>High</small>
+  </div>
+
+  <div class="weatherItem temp">
+    <span>🌡️</span>
+    <b>${Math.round(weatherData[d.date].low)}°</b>
+    <small>Low</small>
+  </div>
+
+  <div class="weatherItem rain">
+    <span>🌧️</span>
+    <b>${weatherData[d.date].rain}%</b>
+    <small>Rain</small>
+  </div>
+
+</div>
+`
+: `
+<div class="weatherUnavailable">
+
+  🌤️ Forecast available closer to travel
+
+</div>
+`}${ovs.length?`<div class="overlapBanner"><div><strong>⭐ OVERLAP</strong><h3>${ovs.map(k=>slotNames[k]).join(' + ')}</h3></div></div>`:''}${['m','a','e'].map(k=>slot(d,k,ovs.includes(k))).join('')}</main>`}
 function slot(d,k,overlap){return `<section class="slot"><div class="slotTitle">${{m:'🌅',a:'☀️',e:'🌙'}[k]} ${slotNames[k]} ${overlap?'<span class="overlapPill">Overlap</span>':''}</div>${family('p','peterborough',families.peterborough,d.p[k],d.pDetails?.[k]||'',d.date,k)}${family('s','sthelens',families.sthelens,d.s[k],d.sDetails?.[k]||'',d.date,k)}</section>`}
 function getFamilyEvents(date, family, slot){
 
@@ -686,6 +717,47 @@ async function loadSchedule(){if(!configured)return;const {data,error}=await sup
 
 });render()}
 async function saveSchedule(e){e.preventDefault();const fd=new FormData(e.target);const args={p_trip_date:editing.date,p_family_id:editing.family,p_slot:editing.slot,p_location:fd.get('location'),p_details:fd.get('details'),p_pin:fd.get('pin')};const {error}=await supabase.rpc('edit_schedule_slot',args);if(error){toast(error.message.includes('Incorrect')?'Incorrect universal PIN':error.message);return}editing=null;toast('Schedule updated for everyone');await loadSchedule()}
+async function loadWeather(){
+
+  try{
+
+    const response =
+      await fetch(
+        'https://api.open-meteo.com/v1/forecast?latitude=28.5383&longitude=-81.3792&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto'
+      );
+
+    const data =
+      await response.json();
+
+    weatherData={};
+
+    data.daily.time.forEach(
+      (date,index)=>{
+
+        weatherData[date]={
+
+          high:
+            data.daily.temperature_2m_max[index],
+
+          low:
+            data.daily.temperature_2m_min[index],
+
+          rain:
+            data.daily.precipitation_probability_max[index]
+
+        };
+
+      }
+    );
+
+    render();
+
+  }catch(err){
+
+    console.error(err);
+
+  }
+
 async function loadBookings(){
 
   if(!configured)return;
@@ -811,6 +883,8 @@ if(configured&&unlocked){
   loadSchedule();
 
   loadBookings();
+
+  loadWeather();
 
 }
 if(configured){
