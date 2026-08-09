@@ -32,6 +32,7 @@ function getDefaultDate() {
 
 let bookings=[],
     bookingModal=null,
+    bookingToDelete=null,
     tab='plans',
     selected=getDefaultDate(),
     modal=null,
@@ -277,6 +278,35 @@ ${
 </main>
 `;
 }function foodCard(p){const u=photoUrl(p);return `<article class="foodCard"><img src="${u}" alt="${esc(p.dish||'Food photo')}" loading="lazy"><div class="foodBody"><div class="stars">${'★'.repeat(p.rating)}<span style="color:#e5e7eb">${'★'.repeat(5-p.rating)}</span></div><h3>${esc(p.dish||'Mystery treat')}</h3><div style="color:#7e22ce;font-weight:900;margin-top:3px">🍴 ${esc(p.restaurant||'Orlando')}</div>${p.notes?`<p>${esc(p.notes)}</p>`:''}<div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><a class="download" href="${u}" target="_blank" download>↧ Open / download</a></div></article>`}
+function deleteBookingModal(){
+
+  return `
+<div class="modal">
+
+<div class="sheet">
+
+<h2>
+Delete booking?
+</h2>
+
+<p>
+This booking will be removed.
+</p>
+
+<button
+  class="primary"
+  id="confirmDeleteBooking"
+>
+Delete booking
+</button>
+
+</div>
+
+</div>
+`;
+
+}
+
 function bookingModalView(){
 
   return `
@@ -322,7 +352,8 @@ function uploadModal(kind){const food=kind==='food';return `<div class="modal"><
 function editModal(){const d=schedule.find(x=>x.date===editing.date),key=editing.family==='peterborough'?'p':'s',detailsKey=key==='p'?'pDetails':'sDetails';return `<div class="modal"><div class="sheet"><button class="close" data-close-edit>×</button><h2>✏️ Edit ${editing.family==='peterborough'?families.peterborough:families.sthelens}</h2><p class="editContext">${fmt(editing.date)} · ${slotNames[editing.slot]}</p><form id="editForm"><label>Activity or location</label><input name="location" required value="${esc(d[key][editing.slot])}" placeholder="e.g. EPCOT"><label>Details or time</label><textarea name="details" placeholder="Optional details">${esc(d[detailsKey]?.[editing.slot]||'')}</textarea><label>Universal editing PIN</label><input name="pin" type="password" inputmode="numeric" required autocomplete="off" placeholder="6-digit PIN"><button class="primary" type="submit">Save for everyone</button></form></div></div>`}
 function render(){if(!unlocked){document.querySelector('#app').innerHTML=accessScreen();const access=$('#accessForm');if(access)access.onsubmit=unlockApp;return}document.querySelector('#app').innerHTML=`<div class="shell">${header()}${tab==='plans'?plans():tab==='photos'?photosView():foodView()}${nav()}</div>${modal?uploadModal(modal):''}
 ${editing?editModal():''}
-${bookingModal?bookingModalView():''}`;bind()}
+${bookingModal?bookingModalView():''}
+${bookingToDelete?deleteBookingModal():''}`;bind()}
 function bind(){
 
   document.querySelectorAll('[data-tab]').forEach(b=>{
@@ -493,7 +524,20 @@ function bind(){
     };
 
   });
+document
+.querySelectorAll('[data-booking-id]')
+.forEach(b=>{
 
+  b.onclick=()=>{
+
+    bookingToDelete=
+      b.dataset.bookingId;
+
+    render();
+
+  };
+
+});
   const form=$('#uploadForm');
   if(form){
     form.onsubmit=upload;
