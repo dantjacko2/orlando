@@ -758,6 +758,8 @@ async function loadWeather(){
 
   }
 
+}
+
 async function loadBookings(){
 
   if(!configured)return;
