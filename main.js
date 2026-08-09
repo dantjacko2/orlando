@@ -397,6 +397,54 @@ Evening
 
 </select>
 
+<label>
+Category
+</label>
+
+<select name="category">
+
+  <option value="food"
+    ${bookingToEdit.category==='food'?'selected':''}>
+    Dining
+  </option>
+
+  <option value="ride"
+    ${bookingToEdit.category==='ride'?'selected':''}>
+    Ride
+  </option>
+
+  <option value="show"
+    ${bookingToEdit.category==='show'?'selected':''}>
+    Show
+  </option>
+
+  <option value="travel"
+    ${bookingToEdit.category==='travel'?'selected':''}>
+    Travel
+  </option>
+
+  <option value="cruise"
+    ${bookingToEdit.category==='cruise'?'selected':''}>
+    Cruise
+  </option>
+
+  <option value="hotel"
+    ${bookingToEdit.category==='hotel'?'selected':''}>
+    Hotel
+  </option>
+
+  <option value="experience"
+    ${bookingToEdit.category==='experience'?'selected':''}>
+    Experience
+  </option>
+
+  <option value="other"
+    ${bookingToEdit.category==='other'?'selected':''}>
+    Other
+  </option>
+
+</select>
+
 <button
   class="primary"
   type="submit"
