@@ -31,6 +31,7 @@ function getDefaultDate() {
 }
 
 let bookings=[],
+    bookingModal=null,
     tab='plans',
     selected=getDefaultDate(),
     modal=null,
@@ -273,30 +274,97 @@ ${
 </main>
 `;
 }function foodCard(p){const u=photoUrl(p);return `<article class="foodCard"><img src="${u}" alt="${esc(p.dish||'Food photo')}" loading="lazy"><div class="foodBody"><div class="stars">${'★'.repeat(p.rating)}<span style="color:#e5e7eb">${'★'.repeat(5-p.rating)}</span></div><h3>${esc(p.dish||'Mystery treat')}</h3><div style="color:#7e22ce;font-weight:900;margin-top:3px">🍴 ${esc(p.restaurant||'Orlando')}</div>${p.notes?`<p>${esc(p.notes)}</p>`:''}<div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><a class="download" href="${u}" target="_blank" download>↧ Open / download</a></div></article>`}
+function bookingModalView(){
+
+  return `
+<div class="modal">
+
+<div class="sheet">
+
+<button
+  class="close"
+  data-close-booking
+>
+×
+</button>
+
+<h2>
+📅 Add booking
+</h2>
+
+<form id="bookingForm">
+
+<label>
+Booking title
+</label>
+
+<input
+  name="title"
+  required
+  placeholder="e.g. Cinderella's Royal Table"
+>
+
+<button class="primary" type="submit">
+Save booking
+</button>
+
+</form>
+
+</div>
+
+</div>
+`;
+}
 function uploadModal(kind){const food=kind==='food';return `<div class="modal"><div class="sheet"><button class="close" data-close>×</button><h2>${food?'🍽️ Add food review':'📸 Add a memory'}</h2><form id="uploadForm"><label>Photo</label><input name="file" type="file" accept="image/*" required><label>Who is posting?</label><select name="family"><option>Peterborough Jacksons</option><option>St Helens Jacksons</option><option>Both families</option></select>${food?`<label>Restaurant or location</label><input name="restaurant" required placeholder="e.g. Homecomin’"><label>Dish or drink</label><input name="dish" required placeholder="e.g. Fried chicken"><label>Star rating</label><div class="starPicker">${[1,2,3,4,5].map(n=>`<button type="button" data-rating="${n}" class="${n<=rating?'on':''}">★</button>`).join('')}</div><label>Review</label><textarea name="notes" placeholder="What made it great?"></textarea>`:`<label>Caption</label><textarea name="caption" placeholder="What’s happening?"></textarea>`}<button class="primary" type="submit">Upload for everyone</button><div id="progress"></div></form></div></div>`}
 function editModal(){const d=schedule.find(x=>x.date===editing.date),key=editing.family==='peterborough'?'p':'s',detailsKey=key==='p'?'pDetails':'sDetails';return `<div class="modal"><div class="sheet"><button class="close" data-close-edit>×</button><h2>✏️ Edit ${editing.family==='peterborough'?families.peterborough:families.sthelens}</h2><p class="editContext">${fmt(editing.date)} · ${slotNames[editing.slot]}</p><form id="editForm"><label>Activity or location</label><input name="location" required value="${esc(d[key][editing.slot])}" placeholder="e.g. EPCOT"><label>Details or time</label><textarea name="details" placeholder="Optional details">${esc(d[detailsKey]?.[editing.slot]||'')}</textarea><label>Universal editing PIN</label><input name="pin" type="password" inputmode="numeric" required autocomplete="off" placeholder="6-digit PIN"><button class="primary" type="submit">Save for everyone</button></form></div></div>`}
-function render(){if(!unlocked){document.querySelector('#app').innerHTML=accessScreen();const access=$('#accessForm');if(access)access.onsubmit=unlockApp;return}document.querySelector('#app').innerHTML=`<div class="shell">${header()}${tab==='plans'?plans():tab==='photos'?photosView():foodView()}${nav()}</div>${modal?uploadModal(modal):''}${editing?editModal():''}`;bind()}
-function bind(){document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;modal=null;editing=null;render();if(tab!=='plans')loadPhotos()});document.querySelectorAll('[data-date]').forEach(b=>b.onclick=()=>{selected=b.dataset.date;render()});document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{if(!configured)return toast('Connect Supabase first');modal=b.dataset.add;rating=5;render()});document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{modal=null;render()});document.querySelectorAll('[data-close-edit]').forEach(b=>b.onclick=()=>{editing=null;render()});document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>{editing={family:b.dataset.edit,date:b.dataset.date,slot:b.dataset.slot};render()});document.querySelectorAll('[data-rating]').forEach(b=>b.onclick=()=>{rating=+b.dataset.rating;render()});document.querySelectorAll('[data-food-filter]').forEach(b=>b.onclick=()=>{foodFilter=b.dataset.foodFilter;render()});document.querySelectorAll('[data-food-family]').forEach(b=>{
-2
- 
-3
-b.onclick=()=>{
-4
- 
-5
-foodFamily=b.dataset.foodFamily;
-6
- 
-7
-render();
-8
- 
-9
-};
-10
- 
-11
-});document.querySelectorAll('[data-photo-filter]').forEach(b=>{
+function render(){if(!unlocked){document.querySelector('#app').innerHTML=accessScreen();const access=$('#accessForm');if(access)access.onsubmit=unlockApp;return}document.querySelector('#app').innerHTML=`<div class="shell">${header()}${tab==='plans'?plans():tab==='photos'?photosView():foodView()}${nav()}</div>${modal?uploadModal(modal):''}
+${editing?editModal():''}
+${bookingModal?bookingModalView():''}`;bind()}
+function bind(){document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;modal=null;editing=null;render();if(tab!=='plans')loadPhotos()});document.querySelectorAll('[data-date]').forEach(b=>b.onclick=()=>{selected=b.dataset.date;render()});document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{if(!configured)return toast('Connect Supabase first');document
+.querySelectorAll('[data-close-booking]')
+.forEach(b=>{
+
+  b.onclick=()=>{
+
+    bookingModal=null;
+
+    render();
+
+  };
+
+});document
+.querySelectorAll('[data-add-booking]')
+.forEach(b=>{
+
+  b.onclick=()=>{
+
+    bookingModal={
+      family:b.dataset.addBooking,
+      date:b.dataset.date,
+      slot:b.dataset.slot
+    };
+
+    render();
+
+  };
+
+});modal=b.dataset.add;rating=5;render()});document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{modal=null;render()});document.querySelectorAll('[data-close-edit]').forEach(b=>b.onclick=()=>{editing=null;render()});document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>{editing={family:b.dataset.edit,date:b.dataset.date,slot:b.dataset.slot};render()});document.querySelectorAll('[data-rating]').forEach(b=>b.onclick=()=>{rating=+b.dataset.rating;render()});document.querySelectorAll('[data-food-filter]').forEach(b=>b.onclick=()=>{foodFilter=b.dataset.foodFilter;render()});document
+.querySelectorAll('[data-add-booking]')
+.forEach(b=>{
+
+  b.onclick=()=>{
+
+    bookingModal={
+      family:b.dataset.addBooking,
+      date:b.dataset.date,
+      slot:b.dataset.slot
+    };
+
+    render();
+
+  };
+
+});;document.querySelectorAll('[data-photo-filter]').forEach(b=>{
 
   b.onclick=()=>{
 
@@ -308,7 +376,15 @@ render();
   };
 
 });
-const form=$('#uploadForm');if(form)form.onsubmit=upload;const edit=$('#editForm');if(edit)edit.onsubmit=saveSchedule}
+const form=$('#uploadForm');
+if(form)form.onsubmit=upload;
+
+const edit=$('#editForm');
+if(edit)edit.onsubmit=saveSchedule;
+
+const bookingForm=$('#bookingForm');
+if(bookingForm)bookingForm.onsubmit=saveBooking;
+`
 async function loadSchedule(){if(!configured)return;const {data,error}=await supabase.from('schedule_slots').select('*');if(error){toast('Schedule connection: '+error.message);return}for(const row of data||[]){const d=schedule.find(x=>x.date===row.trip_date);if(!d)continue;const k=row.family_id==='peterborough'?'p':'s',dk=k==='p'?'pDetails':'sDetails';d[k][row.slot]=row.location;d[dk]??={m:'',a:'',e:''};d[dk][row.slot]=row.details||''}schedule.forEach(day => {
 
   // Peterborough Jacksons
@@ -359,7 +435,45 @@ async function loadBookings(){
 render();
 
 }
+async function saveBooking(e){
 
+  e.preventDefault();
+
+  const fd =
+    new FormData(e.target);
+
+  const {error} =
+    await supabase
+      .from('family_bookings')
+      .insert({
+
+        trip_date:
+          bookingModal.date,
+
+        family_id:
+          bookingModal.family,
+
+        slot:
+          bookingModal.slot,
+
+        title:
+          fd.get('title')
+
+      });
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+
+  }
+
+  bookingModal=null;
+
+  await loadBookings();
+
+}
 async function loadPhotos(){if(!configured)return;loading=true;render();const {data,error}=await supabase.from('trip_photos').select('*').order('created_at',{ascending:false});loading=false;if(error)toast(error.message);else photos=data||[];render()}
 async function resize(file){const bitmap=await createImageBitmap(file);const max=1800,s=Math.min(1,max/Math.max(bitmap.width,bitmap.height));const c=document.createElement('canvas');c.width=Math.round(bitmap.width*s);c.height=Math.round(bitmap.height*s);c.getContext('2d').drawImage(bitmap,0,0,c.width,c.height);return await new Promise(r=>c.toBlob(r,'image/jpeg',.84))}
 async function upload(e){e.preventDefault();const fd=new FormData(e.target),file=fd.get('file');if(!file?.size)return;try{$('#progress').innerHTML='<div class="progress"><i style="width:25%"></i></div>';const blob=await resize(file);const path=`${modal}/${Date.now()}-${crypto.randomUUID()}.jpg`;let q=await supabase.storage.from('trip-photos').upload(path,blob,{contentType:'image/jpeg'});if(q.error)throw q.error;$('#progress').innerHTML='<div class="progress"><i style="width:75%"></i></div>';const row={kind:modal,storage_path:path,family_name:fd.get('family'),caption:fd.get('caption')||null,restaurant:fd.get('restaurant')||null,dish:fd.get('dish')||null,rating:modal==='food'?rating:null,notes:fd.get('notes')||null};q=await supabase.from('trip_photos').insert(row);if(q.error)throw q.error;modal=null;toast('Uploaded for everyone');await loadPhotos()}catch(err){toast(err.message||'Upload failed')}}
