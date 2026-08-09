@@ -902,13 +902,15 @@ async function updateBooking(e){
   const {error} =
     await supabase
       .from('family_bookings')
-      .update({
+    .update({
 
-        title:fd.get('title'),
-        trip_date:fd.get('trip_date'),
-        slot:fd.get('slot')
+  title:fd.get('title'),
+  trip_date:fd.get('trip_date'),
+  slot:fd.get('slot'),
+  category:fd.get('category')
 
-      })
+})
+
       .eq('id',bookingToEdit.id);
 
   if(error){
