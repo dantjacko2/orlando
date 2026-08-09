@@ -30,7 +30,8 @@ function getDefaultDate() {
 
 }
 
-let tab='plans',
+let bookings=[],
+    tab='plans',
     selected=getDefaultDate(),
     modal=null,
     editing=null,
@@ -54,18 +55,12 @@ function plans(){const d=schedule.find(x=>x.date===selected)||schedule[0], ovs=o
 function slot(d,k,overlap){return `<section class="slot"><div class="slotTitle">${{m:'🌅',a:'☀️',e:'🌙'}[k]} ${slotNames[k]} ${overlap?'<span class="overlapPill">Overlap</span>':''}</div>${family('p','peterborough',families.peterborough,d.p[k],d.pDetails?.[k]||'',d.date,k)}${family('s','sthelens',families.sthelens,d.s[k],d.sDetails?.[k]||'',d.date,k)}</section>`}
 function getFamilyEvents(date, family, slot){
 
-  const bookings =
-    familyBookings[date];
-
-  if(!bookings){
-    return [];
-  }
-
-  if(family === 'peterborough'){
-    return bookings.p?.[slot] || [];
-  }
-
-  return bookings.s?.[slot] || [];
+  return bookings.filter(
+    b =>
+      b.trip_date === date &&
+      b.family_id === family &&
+      b.slot === slot
+  );
 
 }
 ``
@@ -100,7 +95,7 @@ ${familyEvents.length
 
 ${familyEvents.map(event => `
 <div>
-🎟️ ${esc(event)}
+🎟️ ${esc(event.title)}
 </div>
 `).join('')}
 
@@ -324,10 +319,39 @@ async function loadSchedule(){if(!configured)return;const {data,error}=await sup
 
 });render()}
 async function saveSchedule(e){e.preventDefault();const fd=new FormData(e.target);const args={p_trip_date:editing.date,p_family_id:editing.family,p_slot:editing.slot,p_location:fd.get('location'),p_details:fd.get('details'),p_pin:fd.get('pin')};const {error}=await supabase.rpc('edit_schedule_slot',args);if(error){toast(error.message.includes('Incorrect')?'Incorrect universal PIN':error.message);return}editing=null;toast('Schedule updated for everyone');await loadSchedule()}
+async function loadBookings(){
+
+  if(!configured)return;
+
+  const {data,error} =
+    await supabase
+      .from('family_bookings')
+      .select('*');
+
+  if(error){
+
+    console.error(error);
+
+    return;
+
+  }
+
+  bookings = data || [];
+
+render();
+
+}
+
 async function loadPhotos(){if(!configured)return;loading=true;render();const {data,error}=await supabase.from('trip_photos').select('*').order('created_at',{ascending:false});loading=false;if(error)toast(error.message);else photos=data||[];render()}
 async function resize(file){const bitmap=await createImageBitmap(file);const max=1800,s=Math.min(1,max/Math.max(bitmap.width,bitmap.height));const c=document.createElement('canvas');c.width=Math.round(bitmap.width*s);c.height=Math.round(bitmap.height*s);c.getContext('2d').drawImage(bitmap,0,0,c.width,c.height);return await new Promise(r=>c.toBlob(r,'image/jpeg',.84))}
 async function upload(e){e.preventDefault();const fd=new FormData(e.target),file=fd.get('file');if(!file?.size)return;try{$('#progress').innerHTML='<div class="progress"><i style="width:25%"></i></div>';const blob=await resize(file);const path=`${modal}/${Date.now()}-${crypto.randomUUID()}.jpg`;let q=await supabase.storage.from('trip-photos').upload(path,blob,{contentType:'image/jpeg'});if(q.error)throw q.error;$('#progress').innerHTML='<div class="progress"><i style="width:75%"></i></div>';const row={kind:modal,storage_path:path,family_name:fd.get('family'),caption:fd.get('caption')||null,restaurant:fd.get('restaurant')||null,dish:fd.get('dish')||null,rating:modal==='food'?rating:null,notes:fd.get('notes')||null};q=await supabase.from('trip_photos').insert(row);if(q.error)throw q.error;modal=null;toast('Uploaded for everyone');await loadPhotos()}catch(err){toast(err.message||'Upload failed')}}
 function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.append(t);setTimeout(()=>t.remove(),3500)}
 render();
-if(configured&&unlocked){loadSchedule()}
+if(configured&&unlocked){
+
+  loadSchedule();
+
+  loadBookings();
+
+}
 if(configured){supabase.channel('schedule-live').on('postgres_changes',{event:'UPDATE',schema:'public',table:'schedule_slots'},()=>{if(unlocked)loadSchedule()}).subscribe()}
