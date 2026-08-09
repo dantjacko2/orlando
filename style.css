@@ -34,7 +34,27 @@ linear-gradient(
   font-size:18px;
 
   opacity:.8;
-}.heroTop{display:flex;justify-content:space-between;align-items:center}.tag{background:#ffffff22;padding:7px 11px;border-radius:99px;font-size:11px;font-weight:900;letter-spacing:.09em}.avatars{display:flex}.avatar{width:36px;height:36px;border:2px solid white;border-radius:50%;display:grid;place-items:center;font-weight:950;margin-left:-6px}.avatar.p{background:#22d3ee;color:#083344}.avatar.s{background:#fbbf24;color:#451a03}.hero h1{
+}
+.heroCastle{
+  position:absolute;
+  right:-10px;
+  bottom:-30px;
+  font-size:120px;
+  opacity:.10;
+  pointer-events:none;
+}
+
+.heroFireworks{
+  position:absolute;
+  top:30px;
+  right:95px;
+  color:#ffd700;
+  font-size:14px;
+  opacity:.75;
+  letter-spacing:4px;
+  pointer-events:none;
+}
+.heroTop{display:flex;justify-content:space-between;align-items:center}.tag{background:#ffffff22;padding:7px 11px;border-radius:99px;font-size:11px;font-weight:900;letter-spacing:.09em}.avatars{display:flex}.avatar{width:36px;height:36px;border:2px solid white;border-radius:50%;display:grid;place-items:center;font-weight:950;margin-left:-6px}.avatar.p{background:#22d3ee;color:#083344}.avatar.s{background:#fbbf24;color:#451a03}.hero h1{
   font-size:64px;
   margin:20px 0 4px;
   letter-spacing:-3px;
