@@ -64,7 +64,7 @@ function getFamilyEvents(date, family, slot){
   );
 
 }
-``
+
 function family(cls,id,name,where,details,date,slot){
 
   const familyEvents =
@@ -320,71 +320,193 @@ function editModal(){const d=schedule.find(x=>x.date===editing.date),key=editing
 function render(){if(!unlocked){document.querySelector('#app').innerHTML=accessScreen();const access=$('#accessForm');if(access)access.onsubmit=unlockApp;return}document.querySelector('#app').innerHTML=`<div class="shell">${header()}${tab==='plans'?plans():tab==='photos'?photosView():foodView()}${nav()}</div>${modal?uploadModal(modal):''}
 ${editing?editModal():''}
 ${bookingModal?bookingModalView():''}`;bind()}
-function bind(){document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;modal=null;editing=null;render();if(tab!=='plans')loadPhotos()});document.querySelectorAll('[data-date]').forEach(b=>b.onclick=()=>{selected=b.dataset.date;render()});document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{if(!configured)return toast('Connect Supabase first');document
-.querySelectorAll('[data-close-booking]')
-.forEach(b=>{
+function bind(){
 
-  b.onclick=()=>{
+  document.querySelectorAll('[data-tab]').forEach(b=>{
 
-    bookingModal=null;
+    b.onclick=()=>{
 
-    render();
+      tab=b.dataset.tab;
 
-  };
+      modal=null;
+      editing=null;
 
-});document
-.querySelectorAll('[data-add-booking]')
-.forEach(b=>{
+      render();
 
-  b.onclick=()=>{
+      if(tab!=='plans'){
+        loadPhotos();
+      }
 
-    bookingModal={
-      family:b.dataset.addBooking,
-      date:b.dataset.date,
-      slot:b.dataset.slot
     };
 
-    render();
+  });
 
-  };
+  document.querySelectorAll('[data-date]').forEach(b=>{
 
-});modal=b.dataset.add;rating=5;render()});document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{modal=null;render()});document.querySelectorAll('[data-close-edit]').forEach(b=>b.onclick=()=>{editing=null;render()});document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>{editing={family:b.dataset.edit,date:b.dataset.date,slot:b.dataset.slot};render()});document.querySelectorAll('[data-rating]').forEach(b=>b.onclick=()=>{rating=+b.dataset.rating;render()});document.querySelectorAll('[data-food-filter]').forEach(b=>b.onclick=()=>{foodFilter=b.dataset.foodFilter;render()});document
-.querySelectorAll('[data-add-booking]')
-.forEach(b=>{
+    b.onclick=()=>{
 
-  b.onclick=()=>{
+      selected=b.dataset.date;
 
-    bookingModal={
-      family:b.dataset.addBooking,
-      date:b.dataset.date,
-      slot:b.dataset.slot
+      render();
+
     };
 
-    render();
+  });
 
-  };
+  document.querySelectorAll('[data-add]').forEach(b=>{
 
-});;document.querySelectorAll('[data-photo-filter]').forEach(b=>{
+    b.onclick=()=>{
 
-  b.onclick=()=>{
+      if(!configured){
+        return toast('Connect Supabase first');
+      }
 
-    photoFilter =
-      b.dataset.photoFilter;
+      modal=b.dataset.add;
 
-    render();
+      rating=5;
 
-  };
+      render();
 
-});
-const form=$('#uploadForm');
-if(form)form.onsubmit=upload;
+    };
 
-const edit=$('#editForm');
-if(edit)edit.onsubmit=saveSchedule;
+  });
 
-const bookingForm=$('#bookingForm');
-if(bookingForm)bookingForm.onsubmit=saveBooking;
-`
+  document
+    .querySelectorAll('[data-add-booking]')
+    .forEach(b=>{
+
+      b.onclick=()=>{
+
+        bookingModal={
+          family:b.dataset.addBooking,
+          date:b.dataset.date,
+          slot:b.dataset.slot
+        };
+
+        render();
+
+      };
+
+    });
+
+  document
+    .querySelectorAll('[data-close-booking]')
+    .forEach(b=>{
+
+      b.onclick=()=>{
+
+        bookingModal=null;
+
+        render();
+
+      };
+
+    });
+
+  document.querySelectorAll('[data-close]').forEach(b=>{
+
+    b.onclick=()=>{
+
+      modal=null;
+
+      render();
+
+    };
+
+  });
+
+  document.querySelectorAll('[data-close-edit]').forEach(b=>{
+
+    b.onclick=()=>{
+
+      editing=null;
+
+      render();
+
+    };
+
+  });
+
+  document.querySelectorAll('[data-edit]').forEach(b=>{
+
+    b.onclick=()=>{
+
+      editing={
+        family:b.dataset.edit,
+        date:b.dataset.date,
+        slot:b.dataset.slot
+      };
+
+      render();
+
+    };
+
+  });
+
+  document.querySelectorAll('[data-rating]').forEach(b=>{
+
+    b.onclick=()=>{
+
+      rating=+b.dataset.rating;
+
+      render();
+
+    };
+
+  });
+
+  document.querySelectorAll('[data-food-filter]').forEach(b=>{
+
+    b.onclick=()=>{
+
+      foodFilter=b.dataset.foodFilter;
+
+      render();
+
+    };
+
+  });
+
+  document.querySelectorAll('[data-food-family]').forEach(b=>{
+
+    b.onclick=()=>{
+
+      foodFamily=b.dataset.foodFamily;
+
+      render();
+
+    };
+
+  });
+
+  document.querySelectorAll('[data-photo-filter]').forEach(b=>{
+
+    b.onclick=()=>{
+
+      photoFilter=b.dataset.photoFilter;
+
+      render();
+
+    };
+
+  });
+
+  const form=$('#uploadForm');
+  if(form){
+    form.onsubmit=upload;
+  }
+
+  const edit=$('#editForm');
+  if(edit){
+    edit.onsubmit=saveSchedule;
+  }
+
+  const bookingForm=$('#bookingForm');
+  if(bookingForm){
+    bookingForm.onsubmit=saveBooking;
+  }
+
+}
 async function loadSchedule(){if(!configured)return;const {data,error}=await supabase.from('schedule_slots').select('*');if(error){toast('Schedule connection: '+error.message);return}for(const row of data||[]){const d=schedule.find(x=>x.date===row.trip_date);if(!d)continue;const k=row.family_id==='peterborough'?'p':'s',dk=k==='p'?'pDetails':'sDetails';d[k][row.slot]=row.location;d[dk]??={m:'',a:'',e:''};d[dk][row.slot]=row.details||''}schedule.forEach(day => {
 
   // Peterborough Jacksons
