@@ -68,6 +68,9 @@ linear-gradient(
 
   backdrop-filter:blur(8px);
 }.hero h1{
+  position:relative;
+  z-index:2;
+
   font-size:64px;
   margin:20px 0 4px;
   letter-spacing:-3px;
@@ -199,7 +202,7 @@ linear-gradient(
 
   position:absolute;
 
-  left:-30px;
+  left:-40px;
 
   bottom:-10px;
 
@@ -207,10 +210,12 @@ linear-gradient(
 
   transform:scaleX(-1);
 
-  opacity:.14;
+  opacity:.12;
 
   pointer-events:none;
 
   filter:none;
+
+  z-index:0;
 
 }
