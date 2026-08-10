@@ -5,16 +5,16 @@ linear-gradient(
   #1a5fb4 55%,
   #6fa8ff
 );color:white;padding:calc(24px + env(safe-area-inset-top)) 20px 26px;position:relative;overflow:hidden}.hero:after{
-  content:"✨";
+  content:"🎆";
   position:absolute;
   top:12px;
   right:18px;
 
-  font-size:48px;
+  font-size:52px;
 
   color:#ffd700;
 
-  opacity:.9;
+  opacity:.35;
 
   text-shadow:
     0 0 10px rgba(255,215,0,.8),
