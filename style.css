@@ -207,11 +207,11 @@ linear-gradient(
 
   bottom:-30px;
 
-  font-size:160px;
+  font-size:180px;
 
   transform:scaleX(-1);
 
-  opacity:.10;
+  opacity:.14;
 
   pointer-events:none;
 
