@@ -40,7 +40,7 @@ linear-gradient(
   right:-15px;
   bottom:-35px;
   font-size:150px;
-  opacity:.25;
+  opacity:.15;
   pointer-events:none;
 }
 
@@ -50,7 +50,7 @@ linear-gradient(
   right:95px;
   color:#ffd700;
   font-size:14px;
-  opacity:.75;
+  opacity:.60;
   letter-spacing:4px;
   pointer-events:none;
 }
@@ -210,7 +210,7 @@ linear-gradient(
 
   transform:scaleX(-1);
 
-  opacity:.14;
+  opacity:.12;
 
   pointer-events:none;
 
