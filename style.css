@@ -199,14 +199,18 @@ linear-gradient(
 
   position:absolute;
 
-  left:18px;
+  left:-30px;
 
-  bottom:18px;
+  bottom:-10px;
 
-  font-size:42px;
+  font-size:85px;
 
-  opacity:.95;
+  opacity:.12;
 
-  filter:drop-shadow(0 4px 8px rgba(0,0,0,.25));
+  transform:rotate(-8deg);
+
+  pointer-events:none;
+
+  filter:none;
 
 }
