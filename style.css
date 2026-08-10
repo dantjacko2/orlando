@@ -239,7 +239,7 @@ linear-gradient(
 
   pointer-events:none;
 
-  animation:heroFlyover 70s linear infinite;
+  animation:heroFlyover 40s linear infinite;
 
 }
 
