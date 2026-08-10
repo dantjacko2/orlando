@@ -244,19 +244,16 @@ linear-gradient(
 }
 
 .heroPlane svg{
-
   display:block;
-
   width:100%;
-
   height:100%;
-
+  transform:rotate(60deg);
 }
 
 @keyframes heroFlyover{
 
   0%{
-    transform:translateX(0);
+    transform:translate(0,0);
     opacity:0;
   }
 
@@ -264,8 +261,13 @@ linear-gradient(
     opacity:.22;
   }
 
+  10%{
+    transform:translate(280px,-60px);
+    opacity:.22;
+  }
+
   18%{
-    transform:translateX(620px);
+    transform:translate(620px,0);
     opacity:.22;
   }
 
