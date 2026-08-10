@@ -70,12 +70,6 @@ function accessScreen(){return `<div class="accessGate"><div class="accessGlow o
 async function unlockApp(e){e.preventDefault();const pin=new FormData(e.target).get('pin');const button=e.target.querySelector('button');button.disabled=true;button.textContent='Checking…';const {data,error}=await supabase.rpc('verify_access_pin',{p_pin:pin});if(error||data!==true){button.disabled=false;button.textContent='Unlock Orlando';const box=$('#accessError');if(box)box.textContent='That PIN is not correct. Please try again.';return}localStorage.setItem('orlando-access','granted');unlocked=true;render();loadSchedule()}
 function header(){return `<header class="hero"><div class="heroTop"><span class="tag">✨ 🏰 Orlando 2026</span></div><h1>Orlando</h1><div class="dates">📅 14 August – 3 September 2026</div><div class="heroFireworks">✦ ✨ ✦ ✨ ✦</div>
 
-<div class="heroPlane">
-  <svg viewBox="0 0 24 24" fill="currentColor">
-    <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9L2 14v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5L21 16z"/>
-  </svg>
-</div>
-
 <div class="heroCoaster">🎢</div>
 <div class="heroCastle">🏰</div></header>`}function nav(){return `<nav class="tabs"><button data-tab="plans" class="${tab==='plans'?'on':''}">📍 Plans</button><button data-tab="photos" class="${tab==='photos'?'on':''}">📸 Photos</button><button data-tab="food" class="${tab==='food'?'on':''}">🍽️ Food</button></nav>`}
 function overlapsFor(d){return ['m','a','e'].filter(k=>d.p[k]===d.s[k]&&d.p[k]!=="Flexible time");}
