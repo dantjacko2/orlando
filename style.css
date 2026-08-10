@@ -203,11 +203,9 @@ linear-gradient(
 
   bottom:-10px;
 
-  font-size:85px;
+  font-size:110px;
 
-  opacity:.12;
-
-  transform:rotate(-8deg);
+  opacity:.14;
 
   pointer-events:none;
 
