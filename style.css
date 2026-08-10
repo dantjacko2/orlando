@@ -24,7 +24,7 @@ linear-gradient(
   transform:rotate(10deg);
 }
 .hero:before{
-  content:"✦ ✨ ✦";
+  content:"🎆 🎇";
   position:absolute;
   top:35px;
   right:95px;
