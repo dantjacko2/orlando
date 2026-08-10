@@ -205,6 +205,8 @@ linear-gradient(
 
   font-size:110px;
 
+  transform:scaleX(-1);
+
   opacity:.14;
 
   pointer-events:none;
