@@ -1613,6 +1613,8 @@ requestAnimationFrame(() => {
 
 });
 
+  }
+
 async function savePhotoEdit(e){
 
   e.preventDefault();
