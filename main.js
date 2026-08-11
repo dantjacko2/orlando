@@ -1528,11 +1528,6 @@ async function toggleReaction(
   reactionType
 ){
 
-  alert(
-    `Photo: ${photoId}
-Reaction: ${reactionType}`
-  );
-
   const existing =
     reactions.find(
       r =>
@@ -1548,12 +1543,6 @@ Reaction: ${reactionType}`
         .from('photo_reactions')
         .delete()
         .eq('id', existing.id);
-
-    alert(
-  JSON.stringify(
-    result.error || result
-  )
-);
 
   }else{
 
@@ -1572,12 +1561,6 @@ Reaction: ${reactionType}`
             reactionType
 
         });
-
- alert(
-  JSON.stringify(
-    result.error || result
-  )
-);
 
   }
 
