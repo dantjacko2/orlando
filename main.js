@@ -993,15 +993,10 @@ if(newProfileForm){
 
       e.stopPropagation();
 
-      await toggleReactionForPhoto(
-
-        btn.dataset.reactPhoto,
-
-        btn.dataset.reactType
-
-      );
-
-    };
+      await toggleReaction(
+  btn.dataset.reactPhoto,
+  btn.dataset.reactType
+);
 
   });
 
@@ -1297,8 +1292,9 @@ if(loveBtn){
   loveBtn.onclick =
     () =>
       toggleReaction(
-        'love'
-      );
+  photoToEdit.id,
+  'love'
+);
 
 }
 
@@ -1310,8 +1306,9 @@ if(funnyBtn){
   funnyBtn.onclick =
     () =>
       toggleReaction(
-        'funny'
-      );
+  photoToEdit.id,
+  'funny'
+);
 
 }
 
@@ -1323,8 +1320,9 @@ if(awesomeBtn){
   awesomeBtn.onclick =
     () =>
       toggleReaction(
-        'awesome'
-      );
+  photoToEdit.id,
+  'awesome'
+);
 
 }
 const deletePhotoBtn =
@@ -1523,8 +1521,52 @@ async function saveFoodEdit(e){
 
 }
 async function toggleReaction(
+  photoId,
   reactionType
 ){
+
+  const existing =
+    reactions.find(
+      r =>
+
+        r.photo_id === photoId &&
+
+        r.profile_name === currentUser &&
+
+        r.reaction === reactionType
+    );
+
+  if(existing){
+
+    await supabase
+      .from('photo_reactions')
+      .delete()
+      .eq('id', existing.id);
+
+  }else{
+
+    await supabase
+      .from('photo_reactions')
+      .insert({
+
+        photo_id:
+          photoId,
+
+        profile_name:
+          currentUser,
+
+        reaction:
+          reactionType
+
+      });
+
+  }
+
+  await loadReactions();
+
+  render();
+
+}
 
   const existing =
     reactions.find(
