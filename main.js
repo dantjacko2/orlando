@@ -39,8 +39,6 @@ let profiles = [];
 
 let reactions = [];
 
-let reactionModal = null;
-
 let weatherData={},
     bookings=[],
     bookingModal=null,
@@ -411,12 +409,16 @@ function reactionCount(
   ).length;
 
 }
-function reactionModalView(){
+
+function showReactionUsers(
+  photoId,
+  reaction
+){
 
   const users =
     reactionUsers(
-      reactionModal.photoId,
-      reactionModal.reaction
+      photoId,
+      reaction
     );
 
   const heading = {
@@ -427,36 +429,49 @@ function reactionModalView(){
 
     awesome:'🤩 Thought was awesome by'
 
-  }[reactionModal.reaction];
+  }[reaction];
 
-  return `
-<div class="modal">
+  const existing =
+    document.querySelector(
+      '.reactionPopupBackdrop'
+    );
 
-<div class="sheet">
+  if(existing){
+
+    existing.remove();
+
+  }
+
+  const popup =
+    document.createElement('div');
+
+  popup.className =
+    'reactionPopupBackdrop';
+
+  popup.innerHTML = `
+
+<div class="reactionPopup">
 
 <button
-  class="close"
-  data-close-reaction
+  class="reactionPopupClose"
 >
 ×
 </button>
 
-<h2>
+<h3>
 ${heading}
-</h2>
+</h3>
 
 ${
   users.length
-  ? users.map(
-      user => `
+    ? users.map(
+        user => `
 <div class="reactionUser">
-
 ${esc(user.profile_name)}
-
 </div>
 `
-    ).join('')
-  : `
+      ).join('')
+    : `
 <div class="reactionUser">
 No reactions yet
 </div>
@@ -465,10 +480,36 @@ No reactions yet
 
 </div>
 
-</div>
 `;
 
+  document.body.appendChild(
+    popup
+  );
+
+  popup
+    .querySelector(
+      '.reactionPopupClose'
+    )
+    .onclick = () => {
+
+      popup.remove();
+
+    };
+
+  popup.onclick = e => {
+
+    if(
+      e.target === popup
+    ){
+
+      popup.remove();
+
+    }
+
+  };
+
 }
+
 function photoCard(p){const u=photoUrl(p);return `<article
   class="photoCard"
   data-photo-id="${p.id}"
@@ -1002,7 +1043,6 @@ ${bookingModal?bookingModalView():''}
 ${bookingToEdit?bookingEditModal():''}
 ${photoToEdit?photoEditModal():''}
 ${foodToEdit?foodEditModal():''}
-${reactionModal?reactionModalView():''}`;
 
 bind();
 
@@ -1129,17 +1169,13 @@ document
         holdTimer =
           setTimeout(() => {
 
-            reactionModal = {
+           showReactionUsers(
 
-              photoId:
-                btn.dataset.reactPhoto,
+  btn.dataset.reactPhoto,
 
-              reaction:
-                btn.dataset.reactType
+  btn.dataset.reactType
 
-            };
-
-            render();
+);
 
           },600);
 
@@ -1443,21 +1479,6 @@ document
 
   });
 
-  document
-  .querySelectorAll(
-    '[data-close-reaction]'
-  )
-  .forEach(btn=>{
-
-    btn.onclick = ()=>{
-
-      reactionModal = null;
-
-      render();
-
-    };
-
-  });
                 const loveBtn =
   $('#loveBtn');
 
