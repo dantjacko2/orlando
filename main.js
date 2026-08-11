@@ -8,7 +8,7 @@ const supabase=configured?createClient(url,key):null;
 const tripDates = seedSchedule
   .map(x => x.date)
   .sort();
-
+ 
 function getDefaultDate() {
 
   const today = new Date();
