@@ -1597,11 +1597,21 @@ async function toggleReaction(
 
   }
 
+const scrollPosition =
+  window.scrollY;
+
 await loadReactions();
 
-await loadPhotos();
+render();
 
-}
+requestAnimationFrame(() => {
+
+  window.scrollTo(
+    0,
+    scrollPosition
+  );
+
+});
 
 async function savePhotoEdit(e){
 
