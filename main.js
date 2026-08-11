@@ -1525,43 +1525,6 @@ async function toggleReaction(
   reactionType
 ){
 
-  const existing =
-    reactions.find(
-      r =>
-
-        r.photo_id === photoId &&
-
-        r.profile_name === currentUser &&
-
-        r.reaction === reactionType
-    );
-
-  if(existing){
-
-    await supabase
-      .from('photo_reactions')
-      .delete()
-      .eq('id', existing.id);
-
-  }else{
-
-    await supabase
-      .from('photo_reactions')
-      .insert({
-
-        photo_id:
-          photoId,
-
-        profile_name:
-          currentUser,
-
-        reaction:
-          reactionType
-
-      });
-
-  }
-
   await loadReactions();
 
   render();
@@ -2120,7 +2083,7 @@ if(configured){
 
 if(configured&&unlocked){
 
- await loadProfiles();
+loadProfiles();
 
 loadSchedule();
 
