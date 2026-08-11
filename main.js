@@ -847,17 +847,26 @@ function bind(){
 
   });
 
-  document.querySelectorAll('[data-rating]').forEach(b=>{
+ document.querySelectorAll('[data-rating]').forEach(b=>{
 
-    b.onclick=()=>{
+  b.onclick=()=>{
 
-      rating=+b.dataset.rating;
+    rating = +b.dataset.rating;
 
-      render();
+    document
+      .querySelectorAll('[data-rating]')
+      .forEach(star=>{
 
-    };
+        star.classList.toggle(
+          'on',
+          +star.dataset.rating <= rating
+        );
 
-  });
+      });
+
+  };
+
+});
 
   document.querySelectorAll('[data-food-filter]').forEach(b=>{
 
