@@ -355,7 +355,10 @@ ${
 
 </main>
 `;
-}function foodCard(p){const u=photoUrl(p);return `<article class="foodCard"><img src="${u}" alt="${esc(p.dish||'Food photo')}" loading="lazy"><div class="foodBody"><div class="stars">${'★'.repeat(p.rating)}<span style="color:#e5e7eb">${'★'.repeat(5-p.rating)}</span></div><h3>${esc(p.dish||'Mystery treat')}</h3><div style="color:#7e22ce;font-weight:900;margin-top:3px">🍴 ${esc(p.restaurant||'Orlando')}</div>${p.notes?`<p>${esc(p.notes)}</p>`:''}<div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><a class="download" href="${u}" target="_blank" download>↧ Open / download</a></div></article>`}
+}function foodCard(p){const u=photoUrl(p);return `<article
+  class="foodCard"
+  data-food-id="${p.id}"
+><img src="${u}" alt="${esc(p.dish||'Food photo')}" loading="lazy"><div class="foodBody"><div class="stars">${'★'.repeat(p.rating)}<span style="color:#e5e7eb">${'★'.repeat(5-p.rating)}</span></div><h3>${esc(p.dish||'Mystery treat')}</h3><div style="color:#7e22ce;font-weight:900;margin-top:3px">🍴 ${esc(p.restaurant||'Orlando')}</div>${p.notes?`<p>${esc(p.notes)}</p>`:''}<div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><a class="download" href="${u}" target="_blank" download>↧ Open / download</a></div></article>`}
 function bookingEditModal(){
 
   return `
@@ -968,6 +971,16 @@ if(photoEditForm){
 
 }
 
+  const foodEditForm =
+  $('#foodEditForm');
+
+if(foodEditForm){
+
+  foodEditForm.onsubmit =
+    saveFoodEdit;
+
+}
+
 const editBookingForm=
   $('#editBookingForm');
 
@@ -1016,7 +1029,19 @@ if(deletePhotoBtn){
   };
 
 }
+const deleteFoodBtn =
+  $('#deleteFoodBtn');
 
+if(deleteFoodBtn){
+
+  deleteFoodBtn.onclick = () => {
+
+    deleteFood();
+
+  };
+
+}
+  
 const deleteBtn=
   $('#deleteBookingBtn');
 
@@ -1122,6 +1147,45 @@ async function loadBookings(){
 render();
 
 }
+async function saveFoodEdit(e){
+
+  e.preventDefault();
+
+  const fd =
+    new FormData(e.target);
+
+  const { error } =
+    await supabase
+      .from('trip_photos')
+      .update({
+
+        restaurant:
+          fd.get('restaurant'),
+
+        dish:
+          fd.get('dish'),
+
+        notes:
+          fd.get('notes')
+
+      })
+      .eq('id', foodToEdit.id);
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+
+  }
+
+  foodToEdit = null;
+
+  toast('Food review updated');
+
+  await loadPhotos();
+
+}
 async function savePhotoEdit(e){
 
   e.preventDefault();
@@ -1151,6 +1215,44 @@ async function savePhotoEdit(e){
   photoToEdit = null;
 
   toast('Photo updated');
+
+  await loadPhotos();
+
+}
+async function deleteFood(){
+
+  const { error: storageError } =
+    await supabase.storage
+      .from('trip-photos')
+      .remove([
+        foodToEdit.storage_path
+      ]);
+
+  if(storageError){
+
+    toast(storageError.message);
+
+    return;
+
+  }
+
+  const { error } =
+    await supabase
+      .from('trip_photos')
+      .delete()
+      .eq('id', foodToEdit.id);
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+
+  }
+
+  foodToEdit = null;
+
+  toast('Food review deleted');
 
   await loadPhotos();
 
