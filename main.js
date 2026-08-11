@@ -1231,6 +1231,15 @@ if(switchProfileBtn){
 
   switchProfileBtn.onclick = () => {
 
+    const confirmed =
+      confirm(
+        'Are you sure you want to change user?'
+      );
+
+    if(!confirmed){
+      return;
+    }
+
     localStorage.removeItem(
       'orlando-profile'
     );
