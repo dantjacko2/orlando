@@ -301,3 +301,12 @@ linear-gradient(
   font-weight:600;
 
 }
+
+.reactionChip{
+
+  -webkit-user-select:none;
+  user-select:none;
+
+  -webkit-touch-callout:none;
+
+}
