@@ -1581,11 +1581,9 @@ Reaction: ${reactionType}`
 
   }
 
-  await loadReactions();
+await loadReactions();
 
-  render();
-
-}
+await loadPhotos();
 
 async function savePhotoEdit(e){
 
