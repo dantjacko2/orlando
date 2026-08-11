@@ -610,7 +610,6 @@ Save
 <button
   type="button"
   id="deletePhotoBtn"
-  onclick="alert('INLINE CLICK WORKS')"
   class="primary"
   style="
     background:#b91c1c;
@@ -1012,8 +1011,6 @@ if(deletePhotoBtn){
 
   deletePhotoBtn.onclick = () => {
 
-    alert('DELETE BUTTON CLICKED');
-
     deletePhoto();
 
   };
@@ -1160,8 +1157,6 @@ async function savePhotoEdit(e){
 }
 async function deletePhoto(){
 
-  alert('DELETE PHOTO FUNCTION STARTED');
-
   const { error: storageError } =
     await supabase.storage
       .from('trip-photos')
@@ -1169,50 +1164,23 @@ async function deletePhoto(){
         photoToEdit.storage_path
       ]);
 
-  if(!storageError){
-
-    alert('STORAGE DELETE SUCCEEDED');
-
-  }
-
   if(storageError){
 
-    alert(
-      'STORAGE ERROR: ' +
-      storageError.message
-    );
+    toast(storageError.message);
 
     return;
 
   }
 
- alert(
-  JSON.stringify(photoToEdit)
-);
-
-const result =
-  await supabase
-    .from('trip_photos')
-    .delete()
-    .eq('id', photoToEdit.id)
-    .select();
-
-alert(
-  JSON.stringify(result)
-);
-
-alert(
-  error
-    ? 'DATABASE DELETE FAILED'
-    : 'DATABASE DELETE SUCCEEDED'
-);
+  const { error } =
+    await supabase
+      .from('trip_photos')
+      .delete()
+      .eq('id', photoToEdit.id);
 
   if(error){
 
-    alert(
-      'DATABASE ERROR: ' +
-      error.message
-    );
+    toast(error.message);
 
     return;
 
