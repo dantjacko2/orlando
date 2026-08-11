@@ -37,6 +37,8 @@ let currentUser =
 
 let profiles = [];
 
+let reactions = [];
+
 let weatherData={},
     bookings=[],
     bookingModal=null,
@@ -370,10 +372,39 @@ St Helens
     )
 ).length?'':'<div class="empty">📸<br><b>No trip photos yet</b><br>Add the first Orlando memory.</div>'}`}</main>`}
 function photoUrl(p){return supabase?.storage.from('trip-photos').getPublicUrl(p.storage_path).data.publicUrl||''}
+function reactionCount(
+  photoId,
+  reaction
+){
+
+  return reactions.filter(
+    r =>
+      r.photo_id === photoId &&
+      r.reaction === reaction
+  ).length;
+
+}
 function photoCard(p){const u=photoUrl(p);return `<article
   class="photoCard"
   data-photo-id="${p.id}"
-><img src="${u}" alt="${esc(p.caption||'Orlando photo')}" loading="lazy"><div class="photoInfo"><b>${esc(p.caption||'Orlando memory')}</b><div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><a class="download" href="${u}" target="_blank" download>↧ Open / download</a></div></article>`}
+><img src="${u}" alt="${esc(p.caption||'Orlando photo')}" loading="lazy"><div class="photoInfo"><b>${esc(p.caption||'Orlando memory')}</b><div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><div class="likesRow">
+
+❤️ ${reactionCount(
+  p.id,
+  'love'
+)}
+
+😂 ${reactionCount(
+  p.id,
+  'funny'
+)}
+
+🤩 ${reactionCount(
+  p.id,
+  'awesome'
+)}
+
+</div><a class="download" href="${u}" target="_blank" download>↧ Open / download</a></div></article>`}
 function foodView(){
 
   const items = photos.filter(
@@ -703,6 +734,34 @@ function photoEditModal(){
 <h2>
 📸 Edit Photo
 </h2>
+
+<div class="reactionButtons">
+
+<button
+  type="button"
+  id="loveBtn"
+  class="primary"
+>
+❤️ Love
+</button>
+
+<button
+  type="button"
+  id="funnyBtn"
+  class="primary"
+>
+😂 Funny
+</button>
+
+<button
+  type="button"
+  id="awesomeBtn"
+  class="primary"
+>
+🤩 Awesome
+</button>
+
+</div>
 
 <form id="photoEditForm">
 
@@ -1200,6 +1259,44 @@ document
     };
 
   });
+                const loveBtn =
+  $('#loveBtn');
+
+if(loveBtn){
+
+  loveBtn.onclick =
+    () =>
+      toggleReaction(
+        'love'
+      );
+
+}
+
+const funnyBtn =
+  $('#funnyBtn');
+
+if(funnyBtn){
+
+  funnyBtn.onclick =
+    () =>
+      toggleReaction(
+        'funny'
+      );
+
+}
+
+const awesomeBtn =
+  $('#awesomeBtn');
+
+if(awesomeBtn){
+
+  awesomeBtn.onclick =
+    () =>
+      toggleReaction(
+        'awesome'
+      );
+
+}
 const deletePhotoBtn =
   $('#deletePhotoBtn');
 
@@ -1393,6 +1490,58 @@ async function saveFoodEdit(e){
   toast('Food review updated');
 
   await loadPhotos();
+
+}
+async function toggleReaction(
+  reactionType
+){
+
+  const existing =
+    reactions.find(
+      r =>
+
+        r.photo_id ===
+          photoToEdit.id &&
+
+        r.profile_name ===
+          currentUser &&
+
+        r.reaction ===
+          reactionType
+    );
+
+  if(existing){
+
+    await supabase
+      .from('photo_reactions')
+      .delete()
+      .eq(
+        'id',
+        existing.id
+      );
+
+  }else{
+
+    await supabase
+      .from('photo_reactions')
+      .insert({
+
+        photo_id:
+          photoToEdit.id,
+
+        profile_name:
+          currentUser,
+
+        reaction:
+          reactionType
+
+      });
+
+  }
+
+  await loadReactions();
+
+  render();
 
 }
 async function savePhotoEdit(e){
@@ -1679,6 +1828,26 @@ async function loadProfiles(){
   profiles = data || [];
 
 }
+async function loadReactions(){
+
+  if(!configured)return;
+
+  const { data,error } =
+    await supabase
+      .from('photo_reactions')
+      .select('*');
+
+  if(error){
+
+    console.error(error);
+
+    return;
+
+  }
+
+  reactions = data || [];
+
+}
 async function loadPhotos(){if(!configured)return;loading=true;render();const {data,error}=await supabase.from('trip_photos').select('*').order('created_at',{ascending:false});loading=false;if(error)toast(error.message);else photos=data||[];render()}
 async function resize(
   file,
@@ -1884,6 +2053,8 @@ if(configured&&unlocked){
 loadSchedule();
 
 loadBookings();
+
+  loadReactions();
 
 loadWeather();
 
