@@ -415,6 +415,8 @@ function showReactionUsers(
   reaction
 ){
 
+  alert('popup called');
+
   const users =
     reactionUsers(
       photoId,
