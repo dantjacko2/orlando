@@ -267,3 +267,27 @@ linear-gradient(
   color:inherit;
 
 }
+
+.reactionChip{
+
+  border:none;
+
+  background:none;
+
+  padding:0;
+
+  cursor:pointer;
+
+  font:inherit;
+
+  color:#64748b;
+
+}
+
+.reactionChip.active{
+
+  color:#7c3aed;
+
+  font-weight:700;
+
+}
