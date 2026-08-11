@@ -996,7 +996,7 @@ function render(){if(!unlocked){document.querySelector('#app').innerHTML=accessS
 
   return;
 
-}document.querySelector('#app').innerHTML'=<div class="shell">${header()}${tab==='plans'?plans():tab==='photos'?photosView():foodView()}${nav()}</div>${modal?uploadModal(modal):''}
+}document.querySelector('#app').innerHTML=<div class="shell">${header()}${tab==='plans'?plans():tab==='photos'?photosView():foodView()}${nav()}</div>${modal?uploadModal(modal):''}
 ${editing?editModal():''}
 ${bookingModal?bookingModalView():''}
 ${bookingToEdit?bookingEditModal():''}
@@ -1008,7 +1008,9 @@ bind();
 
 }
 
-{const resetUserTest =
+function bind(){
+
+const resetUserTest =
   $('#resetUserTest');
 
 if(resetUserTest){
@@ -1732,9 +1734,6 @@ async function toggleReaction(
         });
 
   }
-
-const scrollPosition =
-  window.scrollY;
 
 await loadReactions();
 
