@@ -1585,6 +1585,8 @@ await loadReactions();
 
 await loadPhotos();
 
+}
+
 async function savePhotoEdit(e){
 
   e.preventDefault();
