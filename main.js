@@ -1069,55 +1069,127 @@ function formatBytes(bytes){
   return `${mb.toFixed(1)} MB`;
 
 }
-async function upload(e){e.preventDefault();const fd =
-  new FormData(e.target);
+async function upload(e){
 
-const files =
-  [...fd.getAll('file')]
-    .filter(f => f?.size);
+  e.preventDefault();
 
-if(files.length > 20){
+  const fd =
+    new FormData(e.target);
 
-  toast(
-    'Maximum 20 photos per upload'
-  );
+  const files =
+    [...fd.getAll('file')]
+      .filter(f => f?.size);
 
-  return;
+  if(files.length > 20){
 
-}if(!file?.size)return;try{$('#progress').innerHTML='<div class="progress"><i style="width:25%"></i></div>';const blob =
-  await resize(
+    toast(
+      'Maximum 20 photos per upload'
+    );
 
-    file,
+    return;
 
-    modal === 'food'
-      ? 1000
-      : 1400,
+  }
 
-    modal === 'food'
-      ? .68
-      : .82
+  try{
 
-  );const path=`${modal}/${Date.now()}-${crypto.randomUUID()}.jpg`;let q=await supabase.storage.from('trip-photos').upload(path,blob,{contentType:'image/jpeg'});if(q.error)throw q.error;$('#progress').innerHTML='<div class="progress"><i style="width:75%"></i></div>';const row={
+    $('#progress').innerHTML =
+      '<div class="progress"><i style="width:25%"></i></div>';
 
-  kind:modal,
+    for(const file of files){
 
-  storage_path:path,
+      const blob =
+        await resize(
 
-  size_bytes:blob.size,
+          file,
 
-  family_name:fd.get('family'),
+          modal === 'food'
+            ? 1000
+            : 1400,
 
-  caption:fd.get('caption')||null,
+          modal === 'food'
+            ? .68
+            : .82
 
-  restaurant:fd.get('restaurant')||null,
+        );
 
-  dish:fd.get('dish')||null,
+      const path =
+        `${modal}/${Date.now()}-${crypto.randomUUID()}.jpg`;
 
-  rating:modal==='food'?rating:null,
+      let q =
+        await supabase.storage
+          .from('trip-photos')
+          .upload(
+            path,
+            blob,
+            {
+              contentType:'image/jpeg'
+            }
+          );
 
-  notes:fd.get('notes')||null
+      if(q.error){
+        throw q.error;
+      }
 
-};q=await supabase.from('trip_photos').insert(row);if(q.error)throw q.error;modal=null;toast('Uploaded for everyone');await loadPhotos()}catch(err){toast(err.message||'Upload failed')}}
+      const row = {
+
+        kind:modal,
+
+        storage_path:path,
+
+        size_bytes:blob.size,
+
+        family_name:
+          fd.get('family'),
+
+        caption:
+          fd.get('caption') || null,
+
+        restaurant:
+          fd.get('restaurant') || null,
+
+        dish:
+          fd.get('dish') || null,
+
+        rating:
+          modal === 'food'
+            ? rating
+            : null,
+
+        notes:
+          fd.get('notes') || null
+
+      };
+
+      q =
+        await supabase
+          .from('trip_photos')
+          .insert(row);
+
+      if(q.error){
+        throw q.error;
+      }
+
+    }
+
+    $('#progress').innerHTML =
+      '<div class="progress"><i style="width:100%"></i></div>';
+
+    modal = null;
+
+    toast('Uploaded for everyone');
+
+    await loadPhotos();
+
+  }catch(err){
+
+    toast(
+      err.message ||
+      'Upload failed'
+    );
+
+  }
+
+}
 function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.append(t);setTimeout(()=>t.remove(),3500)}
 render();
 if(configured&&unlocked){
