@@ -1163,19 +1163,30 @@ async function deletePhoto(){
   alert('DELETE PHOTO FUNCTION STARTED');
 
   const { error: storageError } =
-    await supabase.storage
-      .from('trip-photos')
-      .remove([
-        photoToEdit.storage_path
-      ]);
+  await supabase.storage
+    .from('trip-photos')
+    .remove([
+      photoToEdit.storage_path
+    ]);
 
-  if(storageError){
+if(!storageError){
 
-    toast(storageError.message);
+  alert('STORAGE DELETE SUCCEEDED');
 
-    return;
+}
 
-  }
+if(storageError){
+
+  alert(
+    'STORAGE ERROR: ' +
+    storageError.message
+  );
+
+  return;
+
+}
+
+}
 
   const { error } =
     await supabase
@@ -1185,11 +1196,16 @@ async function deletePhoto(){
 
   if(error){
 
-    toast(error.message);
+  alert(
+    'DATABASE ERROR: ' +
+    error.message
+  );
 
-    return;
+  return;
 
-  }
+}
+
+  
 
   photoToEdit = null;
 
