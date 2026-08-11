@@ -458,7 +458,7 @@ class="reactionChip ${
 🤩 ${reactionCount(p.id,'awesome')}
 </button>
 
-</div><a class="download" href="${u}" target="_blank" download>↧ Open / download</a></div></article>`}
+</div></div></article>`}
 function foodView(){
 
   const items = photos.filter(
@@ -788,48 +788,6 @@ function photoEditModal(){
 <h2>
 📸 Edit Photo
 </h2>
-
-<div class="reactionSummary">
-
-<h3>❤️ Loved by</h3>
-
-${
-  reactionUsers(photoToEdit.id,'love').length
-    ? reactionUsers(photoToEdit.id,'love')
-        .map(x => `<div class="reactionUser">${esc(x.profile_name)}</div>`)
-        .join('')
-    : '<div class="reactionUser">No reactions yet</div>'
-}
-
-<h3>😂 Found funny by</h3>
-
-${
-  reactionUsers(photoToEdit.id,'funny').length
-    ? reactionUsers(photoToEdit.id,'funny')
-        .map(x => `<div class="reactionUser">${esc(x.profile_name)}</div>`)
-        .join('')
-    : '<div class="reactionUser">No reactions yet</div>'
-}
-
-<h3>🤩 Thought was awesome by</h3>
-
-${
-  reactionUsers(photoToEdit.id,'awesome').length
-    ? reactionUsers(photoToEdit.id,'awesome')
-        .map(x => `<div class="reactionUser">${esc(x.profile_name)}</div>`)
-        .join('')
-    : '<div class="reactionUser">No reactions yet</div>'
-}
-
-<a
-  class="download"
-  href="
-  download
->
-↧ Open / Download Original
-</a>
-
-</div>
 
 <form id="photoEditForm">
 
