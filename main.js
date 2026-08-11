@@ -1534,14 +1534,7 @@ async function toggleReaction(
 
  await loadReactions();
 
-alert(
-  'REACTIONS RELOADED: ' +
-  reactions.length
-);
-
 render();
-
-}
 
 async function savePhotoEdit(e){
 
