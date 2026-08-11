@@ -958,6 +958,15 @@ const bookingForm=$('#bookingForm');
 if(bookingForm){
   bookingForm.onsubmit=saveBooking;
 }
+const photoEditForm =
+  $('#photoEditForm');
+
+if(photoEditForm){
+
+  photoEditForm.onsubmit =
+    savePhotoEdit;
+
+}
 
 const editBookingForm=
   $('#editBookingForm');
@@ -995,7 +1004,15 @@ document
     };
 
   });
+const deletePhotoBtn =
+  $('#deletePhotoBtn');
 
+if(deletePhotoBtn){
+
+  deletePhotoBtn.onclick =
+    deletePhoto;
+
+}
 const deleteBtn=
   $('#deleteBookingBtn');
 
@@ -1099,6 +1116,77 @@ async function loadBookings(){
   bookings = data || [];
 
 render();
+
+}
+async function savePhotoEdit(e){
+
+  e.preventDefault();
+
+  const fd =
+    new FormData(e.target);
+
+  const { error } =
+    await supabase
+      .from('trip_photos')
+      .update({
+
+        caption:
+          fd.get('caption')
+
+      })
+      .eq('id', photoToEdit.id);
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+
+  }
+
+  photoToEdit = null;
+
+  toast('Photo updated');
+
+  await loadPhotos();
+
+}
+async function deletePhoto(){
+
+  const { error: storageError } =
+    await supabase.storage
+      .from('trip-photos')
+      .remove([
+        photoToEdit.storage_path
+      ]);
+
+  if(storageError){
+
+    toast(storageError.message);
+
+    return;
+
+  }
+
+  const { error } =
+    await supabase
+      .from('trip_photos')
+      .delete()
+      .eq('id', photoToEdit.id);
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+
+  }
+
+  photoToEdit = null;
+
+  toast('Photo deleted');
+
+  await loadPhotos();
 
 }
 async function deleteBooking(){
