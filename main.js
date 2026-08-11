@@ -985,7 +985,7 @@ if(newProfileForm){
 
   });
 
-                document
+document
   .querySelectorAll('.reactionChip')
   .forEach(btn=>{
 
@@ -994,12 +994,13 @@ if(newProfileForm){
       e.stopPropagation();
 
       await toggleReaction(
-  btn.dataset.reactPhoto,
-  btn.dataset.reactType
-);
+        btn.dataset.reactPhoto,
+        btn.dataset.reactType
+      );
+
+    };
 
   });
-
 
   document.querySelectorAll('[data-add]').forEach(b=>{
 
@@ -1531,54 +1532,6 @@ async function toggleReaction(
 
 }
 
-  const existing =
-    reactions.find(
-      r =>
-
-        r.photo_id ===
-          photoToEdit.id &&
-
-        r.profile_name ===
-          currentUser &&
-
-        r.reaction ===
-          reactionType
-    );
-
-  if(existing){
-
-    await supabase
-      .from('photo_reactions')
-      .delete()
-      .eq(
-        'id',
-        existing.id
-      );
-
-  }else{
-
-    await supabase
-      .from('photo_reactions')
-      .insert({
-
-        photo_id:
-          photoToEdit.id,
-
-        profile_name:
-          currentUser,
-
-        reaction:
-          reactionType
-
-      });
-
-  }
-
-  await loadReactions();
-
-  render();
-
-}
 async function savePhotoEdit(e){
 
   e.preventDefault();
