@@ -554,7 +554,45 @@ ${
 }function foodCard(p){const u=photoUrl(p);return `<article
   class="foodCard"
   data-food-id="${p.id}"
-><img src="${u}" alt="${esc(p.dish||'Food photo')}" loading="lazy"><div class="foodBody"><div class="stars">${'★'.repeat(p.rating)}<span style="color:#e5e7eb">${'★'.repeat(5-p.rating)}</span></div><h3>${esc(p.dish||'Mystery treat')}</h3><div style="color:#7e22ce;font-weight:900;margin-top:3px">🍴 ${esc(p.restaurant||'Orlando')}</div>${p.notes?`<p>${esc(p.notes)}</p>`:''}<div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><a class="download" href="${u}" target="_blank" download>↧ Open / download</a></div></article>`}
+><img src="${u}" alt="${esc(p.dish||'Food photo')}" loading="lazy"><div class="foodBody"><div class="stars">${'★'.repeat(p.rating)}<span style="color:#e5e7eb">${'★'.repeat(5-p.rating)}</span></div><h3>${esc(p.dish||'Mystery treat')}</h3><div style="color:#7e22ce;font-weight:900;margin-top:3px">🍴 ${esc(p.restaurant||'Orlando')}</div>${p.notes?`<p>${esc(p.notes)}</p>`:''}<div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><div class="likesRow">
+
+<button
+  class="reactionChip ${
+    hasReacted(p.id,'love')
+      ? 'active'
+      : ''
+  }"
+  data-react-photo="${p.id}"
+  data-react-type="love"
+>
+❤️ ${reactionCount(p.id,'love')}
+</button>
+
+<button
+  class="reactionChip ${
+    hasReacted(p.id,'funny')
+      ? 'active'
+      : ''
+  }"
+  data-react-photo="${p.id}"
+  data-react-type="funny"
+>
+😂 ${reactionCount(p.id,'funny')}
+</button>
+
+<button
+  class="reactionChip ${
+    hasReacted(p.id,'awesome')
+      ? 'active'
+      : ''
+  }"
+  data-react-photo="${p.id}"
+  data-react-type="awesome"
+>
+🤩 ${reactionCount(p.id,'awesome')}
+</button>
+
+</div></div></article>`}
 function bookingEditModal(){
 
   return `
@@ -916,6 +954,47 @@ Review
 <textarea name="notes">
 ${esc(foodToEdit.notes || '')}
 </textarea>
+
+<div class="reactionSummary">
+
+<h3>❤️ Loved by</h3>
+
+${
+  reactionUsers(foodToEdit.id,'love').length
+    ? reactionUsers(foodToEdit.id,'love')
+        .map(x => `<div class="reactionUser">${esc(x.profile_name)}</div>`)
+        .join('')
+    : '<div class="reactionUser">No reactions yet</div>'
+}
+
+<h3>😂 Found funny by</h3>
+
+${
+  reactionUsers(foodToEdit.id,'funny').length
+    ? reactionUsers(foodToEdit.id,'funny')
+        .map(x => `<div class="reactionUser">${esc(x.profile_name)}</div>`)
+        .join('')
+    : '<div class="reactionUser">No reactions yet</div>'
+}
+
+<h3>🤩 Thought was awesome by</h3>
+
+${
+  reactionUsers(foodToEdit.id,'awesome').length
+    ? reactionUsers(foodToEdit.id,'awesome')
+        .map(x => `<div class="reactionUser">${esc(x.profile_name)}</div>`)
+        .join('')
+    : '<div class="reactionUser">No reactions yet</div>'
+}
+
+</div>
+
+"
+  target="_blank"
+  download
+>
+↧ Open / Download Original
+</a>
 
 <button
   class="primary"
