@@ -991,6 +991,8 @@ document
 
     btn.onclick = async e => {
 
+      alert('REACTION CLICKED');
+
       e.stopPropagation();
 
       await toggleReaction(
