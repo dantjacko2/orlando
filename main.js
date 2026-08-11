@@ -1165,30 +1165,35 @@ document
 
   });
 
-  document
+document
   .querySelectorAll('.reactionChip')
   .forEach(btn=>{
 
     let holdTimer;
+    let longPress = false;
 
     btn.addEventListener(
       'touchstart',
-      () => {
+      e => {
+
+        longPress = false;
 
         holdTimer =
           setTimeout(() => {
 
-           showReactionUsers(
+            longPress = true;
 
-  btn.dataset.reactPhoto,
+            e.preventDefault();
 
-  btn.dataset.reactType
-
-);
+            showReactionUsers(
+              btn.dataset.reactPhoto,
+              btn.dataset.reactType
+            );
 
           },600);
 
-      }
+      },
+      { passive:false }
     );
 
     btn.addEventListener(
@@ -1197,6 +1202,20 @@ document
 
         clearTimeout(
           holdTimer
+        );
+
+      }
+    );
+
+    btn.addEventListener(
+      'contextmenu',
+      e => {
+
+        e.preventDefault();
+
+        showReactionUsers(
+          btn.dataset.reactPhoto,
+          btn.dataset.reactType
         );
 
       }
