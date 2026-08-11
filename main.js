@@ -30,6 +30,13 @@ function getDefaultDate() {
 
 }
 
+let currentUser =
+  localStorage.getItem(
+    'orlando-profile'
+  );
+
+let profiles = [];
+
 let weatherData={},
     bookings=[],
     bookingModal=null,
@@ -46,6 +53,29 @@ foodToEdit=null,
     foodFilter='all',
     foodFamily='all',
     photoFilter='all';
+const PROFILE_VERSION = 2;
+
+const savedProfileVersion =
+  localStorage.getItem(
+    'orlando-profile-version'
+  );
+
+if(
+  savedProfileVersion !==
+  String(PROFILE_VERSION)
+){
+
+  localStorage.removeItem(
+    'orlando-profile'
+  );
+
+  localStorage.setItem(
+    'orlando-profile-version',
+    PROFILE_VERSION
+  );
+
+}
+
 let unlocked=!configured||localStorage.getItem('orlando-access')==='granted';
 let schedule=structuredClone(seedSchedule);
 const $=s=>document.querySelector(s); const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -66,6 +96,80 @@ function bookingIcon(category){
     other:'🎟️'
 
   }[category] || '🎟️';
+
+}
+function profileModal(){
+
+  return `
+<div class="modal">
+
+<div class="sheet">
+
+<h2>
+👋 Welcome
+</h2>
+
+<p>
+Who are you?
+</p>
+
+<form id="profileForm">
+
+<select
+  name="profile"
+  required
+>
+
+<option value="">
+Select profile
+</option>
+
+${profiles.map(
+  p => `
+<option>
+${esc(p.display_name)}
+</option>
+`
+).join('')}
+
+</select>
+
+<button
+  class="primary"
+  type="submit"
+>
+Continue
+</button>
+
+</form>
+
+<hr style="margin:20px 0">
+
+<form id="newProfileForm">
+
+<label>
+Add yourself
+</label>
+
+<input
+  name="name"
+  required
+  placeholder="e.g. Grandad Steve"
+>
+
+<button
+  class="primary"
+  type="submit"
+>
+Create Profile
+</button>
+
+</form>
+
+</div>
+
+</div>
+`;
 
 }
 function accessScreen(){return `<div class="accessGate"><div class="accessGlow one"></div><div class="accessGlow two"></div><div class="accessCard"><div class="accessIcon">🎡</div><div class="eyebrow">Private Orlando space</div><h1>Welcome to Orlando</h1><p>Enter the shared access PIN to view plans, photographs and food reviews.</p><form id="accessForm"><label>Access PIN</label><input name="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" required autocomplete="off" placeholder="6-digit PIN" autofocus><button class="primary" type="submit">Unlock Orlando</button><div id="accessError" class="accessError"></div></form></div></div>`}
@@ -704,13 +808,57 @@ Delete Review
 
 }
 function editModal(){const d=schedule.find(x=>x.date===editing.date),key=editing.family==='peterborough'?'p':'s',detailsKey=key==='p'?'pDetails':'sDetails';return `<div class="modal"><div class="sheet"><button class="close" data-close-edit>×</button><h2>✏️ Edit ${editing.family==='peterborough'?families.peterborough:families.sthelens}</h2><p class="editContext">${fmt(editing.date)} · ${slotNames[editing.slot]}</p><form id="editForm"><label>Activity or location</label><input name="location" required value="${esc(d[key][editing.slot])}" placeholder="e.g. EPCOT"><label>Details or time</label><textarea name="details" placeholder="Optional details">${esc(d[detailsKey]?.[editing.slot]||'')}</textarea><label>Universal editing PIN</label><input name="pin" type="password" inputmode="numeric" required autocomplete="off" placeholder="6-digit PIN"><button class="primary" type="submit">Save for everyone</button></form></div></div>`}
-function render(){if(!unlocked){document.querySelector('#app').innerHTML=accessScreen();const access=$('#accessForm');if(access)access.onsubmit=unlockApp;return}document.querySelector('#app').innerHTML=`<div class="shell">${header()}${tab==='plans'?plans():tab==='photos'?photosView():foodView()}${nav()}</div>${modal?uploadModal(modal):''}
+function render(){if(!currentUser){
+
+  document.querySelector('#app')
+    .innerHTML = profileModal();
+
+  bind();
+
+  return;
+
+}if(!unlocked){document.querySelector('#app').innerHTML=accessScreen();const access=$('#accessForm');if(access)access.onsubmit=unlockApp;return}document.querySelector('#app').innerHTML=`<div class="shell">${header()}${tab==='plans'?plans():tab==='photos'?photosView():foodView()}${nav()}</div>${modal?uploadModal(modal):''}
 ${editing?editModal():''}
 ${bookingModal?bookingModalView():''}
 ${bookingToEdit?bookingEditModal():''}
 ${photoToEdit?photoEditModal():''}
 ${foodToEdit?foodEditModal():''}`;bind()}
-function bind(){
+function bind(){const profileForm =
+  $('#profileForm');
+
+if(profileForm){
+
+  profileForm.onsubmit = e => {
+
+    e.preventDefault();
+
+    const selected =
+      new FormData(e.target)
+        .get('profile');
+
+    currentUser =
+      selected;
+
+    localStorage.setItem(
+      'orlando-profile',
+      selected
+    );
+
+    render();
+
+  };
+
+}
+
+const newProfileForm =
+  $('#newProfileForm');
+
+if(newProfileForm){
+
+  newProfileForm.onsubmit =
+    createProfile;
+
+}
 
   document.querySelectorAll('[data-tab]').forEach(b=>{
 
@@ -1402,6 +1550,69 @@ category:
   await loadBookings();
 
 }
+async function createProfile(e){
+
+  e.preventDefault();
+
+  const name =
+    new FormData(e.target)
+      .get('name')
+      .trim();
+
+  if(!name)return;
+
+  const { error } =
+    await supabase
+      .from('social_profiles')
+      .insert({
+
+        display_name:name
+
+      });
+
+  if(error){
+
+    toast(error.message);
+
+    return;
+
+  }
+
+  currentUser = name;
+
+  localStorage.setItem(
+    'orlando-profile',
+    name
+  );
+
+  await loadProfiles();
+
+  render();
+
+}
+async function loadProfiles(){
+
+  if(!configured)return;
+
+  const { data,error } =
+    await supabase
+      .from('social_profiles')
+      .select('*')
+      .order(
+        'display_name'
+      );
+
+  if(error){
+
+    console.error(error);
+
+    return;
+
+  }
+
+  profiles = data || [];
+
+}
 async function loadPhotos(){if(!configured)return;loading=true;render();const {data,error}=await supabase.from('trip_photos').select('*').order('created_at',{ascending:false});loading=false;if(error)toast(error.message);else photos=data||[];render()}
 async function resize(
   file,
@@ -1594,13 +1805,21 @@ async function upload(e){
 }
 function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.append(t);setTimeout(()=>t.remove(),3500)}
 render();
+if(configured){
+
+  loadProfiles();
+
+}
+
 if(configured&&unlocked){
 
-  loadSchedule();
+ await loadProfiles();
 
-  loadBookings();
+loadSchedule();
 
-  loadWeather();
+loadBookings();
+
+loadWeather();
 
 }
 if(configured){
