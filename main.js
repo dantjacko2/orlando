@@ -389,20 +389,29 @@ function photoCard(p){const u=photoUrl(p);return `<article
   data-photo-id="${p.id}"
 ><img src="${u}" alt="${esc(p.caption||'Orlando photo')}" loading="lazy"><div class="photoInfo"><b>${esc(p.caption||'Orlando memory')}</b><div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><div class="likesRow">
 
-❤️ ${reactionCount(
-  p.id,
-  'love'
-)}
+<button
+  class="reactionChip"
+  data-react-photo="${p.id}"
+  data-react-type="love"
+>
+❤️ ${reactionCount(p.id,'love')}
+</button>
 
-😂 ${reactionCount(
-  p.id,
-  'funny'
-)}
+<button
+  class="reactionChip"
+  data-react-photo="${p.id}"
+  data-react-type="funny"
+>
+😂 ${reactionCount(p.id,'funny')}
+</button>
 
-🤩 ${reactionCount(
-  p.id,
-  'awesome'
-)}
+<button
+  class="reactionChip"
+  data-react-photo="${p.id}"
+  data-react-type="awesome"
+>
+🤩 ${reactionCount(p.id,'awesome')}
+</button>
 
 </div><a class="download" href="${u}" target="_blank" download>↧ Open / download</a></div></article>`}
 function foodView(){
@@ -975,6 +984,27 @@ if(newProfileForm){
     };
 
   });
+
+                document
+  .querySelectorAll('.reactionChip')
+  .forEach(btn=>{
+
+    btn.onclick = async e => {
+
+      e.stopPropagation();
+
+      await toggleReactionForPhoto(
+
+        btn.dataset.reactPhoto,
+
+        btn.dataset.reactType
+
+      );
+
+    };
+
+  });
+
 
   document.querySelectorAll('[data-add]').forEach(b=>{
 
