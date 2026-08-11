@@ -1526,6 +1526,10 @@ async function toggleReaction(
   reactionType
 ){
 
+  alert(
+  photoId + ' - ' + reactionType
+);
+
   await loadReactions();
 
   render();
