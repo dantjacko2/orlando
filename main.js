@@ -889,31 +889,45 @@ function photoEditModal(){
 📸 Edit Photo
 </h2>
 
-<div class="reactionButtons">
+<div class="reactionSummary">
 
-<button
-  type="button"
-  id="loveBtn"
-  class="primary"
->
-❤️ Love
-</button>
+<h3>❤️ Loved by</h3>
 
-<button
-  type="button"
-  id="funnyBtn"
-  class="primary"
->
-😂 Funny
-</button>
+${
+  reactionUsers(photoToEdit.id,'love').length
+    ? reactionUsers(photoToEdit.id,'love')
+        .map(x => `<div class="reactionUser">${esc(x.profile_name)}</div>`)
+        .join('')
+    : '<div class="reactionUser">No reactions yet</div>'
+}
 
-<button
-  type="button"
-  id="awesomeBtn"
-  class="primary"
+<h3>😂 Found funny by</h3>
+
+${
+  reactionUsers(photoToEdit.id,'funny').length
+    ? reactionUsers(photoToEdit.id,'funny')
+        .map(x => `<div class="reactionUser">${esc(x.profile_name)}</div>`)
+        .join('')
+    : '<div class="reactionUser">No reactions yet</div>'
+}
+
+<h3>🤩 Thought was awesome by</h3>
+
+${
+  reactionUsers(photoToEdit.id,'awesome').length
+    ? reactionUsers(photoToEdit.id,'awesome')
+        .map(x => `<div class="reactionUser">${esc(x.profile_name)}</div>`)
+        .join('')
+    : '<div class="reactionUser">No reactions yet</div>'
+}
+
+<a
+  class="download"
+  href="
+  download
 >
-🤩 Awesome
-</button>
+↧ Open / Download Original
+</a>
 
 </div>
 
@@ -926,6 +940,51 @@ Caption
 <textarea name="caption">
 ${esc(photoToEdit.caption || '')}
 </textarea>
+
+<div class="reactionSummary">
+
+<h3>❤️ Loved by</h3>
+
+${
+  reactionUsers(photoToEdit.id,'love').length
+    ? reactionUsers(photoToEdit.id,'love')
+        .map(x => `<div class="reactionUser">${esc(x.profile_name)}</div>`)
+        .join('')
+    : '<div class="reactionUser">No reactions yet</div>'
+}
+
+<h3>😂 Found funny by</h3>
+
+${
+  reactionUsers(photoToEdit.id,'funny').length
+    ? reactionUsers(photoToEdit.id,'funny')
+        .map(x => `<div class="reactionUser">${esc(x.profile_name)}</div>`)
+        .join('')
+    : '<div class="reactionUser">No reactions yet</div>'
+}
+
+<h3>🤩 Thought was awesome by</h3>
+
+${
+  reactionUsers(photoToEdit.id,'awesome').length
+    ? reactionUsers(photoToEdit.id,'awesome')
+        .map(x => `<div class="reactionUser">${esc(x.profile_name)}</div>`)
+        .join('')
+    : '<div class="reactionUser">No reactions yet</div>'
+}
+
+</div>
+
+<a
+  class="download"
+  href="${photoUrl(photoToEdit)}"
+ y:block;
+    margin:15px 0;
+    font-weight:700;
+  "
+>
+↧ Open / Download Original
+</a>
 
 <button
   class="primary"
@@ -1507,47 +1566,6 @@ document
 
   });
 
-                const loveBtn =
-  $('#loveBtn');
-
-if(loveBtn){
-
-  loveBtn.onclick =
-    () =>
-      toggleReaction(
-  photoToEdit.id,
-  'love'
-);
-
-}
-
-const funnyBtn =
-  $('#funnyBtn');
-
-if(funnyBtn){
-
-  funnyBtn.onclick =
-    () =>
-      toggleReaction(
-  photoToEdit.id,
-  'funny'
-);
-
-}
-
-const awesomeBtn =
-  $('#awesomeBtn');
-
-if(awesomeBtn){
-
-  awesomeBtn.onclick =
-    () =>
-      toggleReaction(
-  photoToEdit.id,
-  'awesome'
-);
-
-}
 const deletePhotoBtn =
   $('#deletePhotoBtn');
 
