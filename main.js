@@ -1031,7 +1031,7 @@ function editModal(){const d=schedule.find(x=>x.date===editing.date),key=editing
 function render(){if(!unlocked){document.querySelector('#app').innerHTML=accessScreen();const access=$('#accessForm');if(access)access.onsubmit=unlockApp;return}if(!currentUser){
 
   document.querySelector('#app')
-    .innerHTML = profileModal();
+    .innerHTML= profileModal();
 
   bind();
 
