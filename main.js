@@ -415,8 +415,6 @@ function showReactionUsers(
   reaction
 ){
 
-  alert('popup called');
-
   const users =
     reactionUsers(
       photoId,
@@ -450,7 +448,7 @@ function showReactionUsers(
   popup.className =
     'reactionPopupBackdrop';
 
-  popup.innerHTML = `
+ popup.innerHTML = `
 
 <div class="reactionPopup">
 
