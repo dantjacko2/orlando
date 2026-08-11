@@ -1602,16 +1602,42 @@ const scrollPosition =
 
 await loadReactions();
 
-render();
+document
+  .querySelectorAll('.reactionChip')
+  .forEach(chip => {
 
-requestAnimationFrame(() => {
+    const photoId =
+      chip.dataset.reactPhoto;
 
-  window.scrollTo(
-    0,
-    scrollPosition
-  );
+    const reactionType =
+      chip.dataset.reactType;
 
-});
+    const count =
+      reactionCount(
+        photoId,
+        reactionType
+      );
+
+    const icon = {
+
+      love:'❤️',
+      funny:'😂',
+      awesome:'🤩'
+
+    }[reactionType];
+
+    chip.textContent =
+      `${icon} ${count}`;
+
+    chip.classList.toggle(
+      'active',
+      hasReacted(
+        photoId,
+        reactionType
+      )
+    );
+
+  });
 
   }
 
