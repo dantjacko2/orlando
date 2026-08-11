@@ -39,6 +39,8 @@ let profiles = [];
 
 let reactions = [];
 
+let reactionModal = null;
+
 let weatherData={},
     bookings=[],
     bookingModal=null,
@@ -385,7 +387,18 @@ function hasReacted(
   );
 
 }
+function reactionUsers(
+  photoId,
+  reaction
+){
 
+  return reactions.filter(
+    r =>
+      r.photo_id === photoId &&
+      r.reaction === reaction
+  );
+
+}
 function reactionCount(
   photoId,
   reaction
@@ -396,6 +409,64 @@ function reactionCount(
       r.photo_id === photoId &&
       r.reaction === reaction
   ).length;
+
+}
+function reactionModalView(){
+
+  const users =
+    reactionUsers(
+      reactionModal.photoId,
+      reactionModal.reaction
+    );
+
+  const heading = {
+
+    love:'❤️ Loved by',
+
+    funny:'😂 Found funny by',
+
+    awesome:'🤩 Thought was awesome by'
+
+  }[reactionModal.reaction];
+
+  return `
+<div class="modal">
+
+<div class="sheet">
+
+<button
+  class="close"
+  data-close-reaction
+>
+×
+</button>
+
+<h2>
+${heading}
+</h2>
+
+${
+  users.length
+  ? users.map(
+      user => `
+<div class="reactionUser">
+
+${esc(user.profile_name)}
+
+</div>
+`
+    ).join('')
+  : `
+<div class="reactionUser">
+No reactions yet
+</div>
+`
+}
+
+</div>
+
+</div>
+`;
 
 }
 function photoCard(p){const u=photoUrl(p);return `<article
@@ -930,7 +1001,8 @@ ${editing?editModal():''}
 ${bookingModal?bookingModalView():''}
 ${bookingToEdit?bookingEditModal():''}
 ${photoToEdit?photoEditModal():''}
-${foodToEdit?foodEditModal():''}`;bind()}
+${foodToEdit?foodEditModal():''}
+${reactionModal?reactionModalView():''};bind()}
 function bind(){const resetUserTest =
   $('#resetUserTest');
 
@@ -1034,6 +1106,49 @@ document
       );
 
     };
+
+  });
+
+  document
+  .querySelectorAll('.reactionChip')
+  .forEach(btn=>{
+
+    let holdTimer;
+
+    btn.addEventListener(
+      'touchstart',
+      () => {
+
+        holdTimer =
+          setTimeout(() => {
+
+            reactionModal = {
+
+              photoId:
+                btn.dataset.reactPhoto,
+
+              reaction:
+                btn.dataset.reactType
+
+            };
+
+            render();
+
+          },600);
+
+      }
+    );
+
+    btn.addEventListener(
+      'touchend',
+      () => {
+
+        clearTimeout(
+          holdTimer
+        );
+
+      }
+    );
 
   });
 
@@ -1314,6 +1429,22 @@ document
     btn.onclick=()=>{
 
       foodToEdit=null;
+
+      render();
+
+    };
+
+  });
+
+  document
+  .querySelectorAll(
+    '[data-close-reaction]'
+  )
+  .forEach(btn=>{
+
+    btn.onclick = ()=>{
+
+      reactionModal = null;
 
       render();
 
