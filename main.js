@@ -989,9 +989,7 @@ ${
 
 </div>
 
-"
-  target="_blank"
-  download
+${photoUrl(foodToEdit)}  download
 >
 ↧ Open / Download Original
 </a>
