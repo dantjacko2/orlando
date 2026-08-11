@@ -991,7 +991,7 @@ document
 
     btn.onclick = async e => {
 
-      alert('REACTION CLICKED');
+      e.preventDefault();
 
       e.stopPropagation();
 
@@ -1529,12 +1529,59 @@ async function toggleReaction(
 ){
 
   alert(
-  photoId + ' - ' + reactionType
-);
+    `Photo: ${photoId}
+Reaction: ${reactionType}`
+  );
 
- await loadReactions();
+  const existing =
+    reactions.find(
+      r =>
+        r.photo_id === photoId &&
+        r.profile_name === currentUser &&
+        r.reaction === reactionType
+    );
 
-render();
+  if(existing){
+
+    const result =
+      await supabase
+        .from('photo_reactions')
+        .delete()
+        .eq('id', existing.id);
+
+    alert(
+      JSON.stringify(result)
+    );
+
+  }else{
+
+    const result =
+      await supabase
+        .from('photo_reactions')
+        .insert({
+
+          photo_id:
+            photoId,
+
+          profile_name:
+            currentUser,
+
+          reaction:
+            reactionType
+
+        });
+
+    alert(
+      JSON.stringify(result)
+    );
+
+  }
+
+  await loadReactions();
+
+  render();
+
+}
 
 async function savePhotoEdit(e){
 
