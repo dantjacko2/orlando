@@ -1187,15 +1187,19 @@ async function deletePhoto(){
   }
 
  alert(
-  'ABOUT TO DELETE DATABASE ROW ' +
-  photoToEdit.id
+  JSON.stringify(photoToEdit)
 );
 
-const { error } =
+const result =
   await supabase
     .from('trip_photos')
     .delete()
-    .eq('id', photoToEdit.id);
+    .eq('id', photoToEdit.id)
+    .select();
+
+alert(
+  JSON.stringify(result)
+);
 
 alert(
   error
