@@ -226,3 +226,26 @@ linear-gradient(
   cursor:pointer;
 
 }
+.likesRow{
+
+  display:flex;
+
+  gap:12px;
+
+  margin:8px 0;
+
+  font-size:14px;
+
+  font-weight:700;
+
+}
+
+.reactionButtons{
+
+  display:flex;
+
+  gap:8px;
+
+  margin:12px 0;
+
+}
