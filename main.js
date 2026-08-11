@@ -1186,11 +1186,22 @@ async function deletePhoto(){
 
   }
 
-  const { error } =
-    await supabase
-      .from('trip_photos')
-      .delete()
-      .eq('id', photoToEdit.id);
+ alert(
+  'ABOUT TO DELETE DATABASE ROW ' +
+  photoToEdit.id
+);
+
+const { error } =
+  await supabase
+    .from('trip_photos')
+    .delete()
+    .eq('id', photoToEdit.id);
+
+alert(
+  error
+    ? 'DATABASE DELETE FAILED'
+    : 'DATABASE DELETE SUCCEEDED'
+);
 
   if(error){
 
