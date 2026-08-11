@@ -1532,9 +1532,14 @@ async function toggleReaction(
   photoId + ' - ' + reactionType
 );
 
-  await loadReactions();
+ await loadReactions();
 
-  render();
+alert(
+  'REACTIONS RELOADED: ' +
+  reactions.length
+);
+
+render();
 
 }
 
