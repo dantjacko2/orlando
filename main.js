@@ -68,7 +68,7 @@ function bookingIcon(category){
 }
 function accessScreen(){return `<div class="accessGate"><div class="accessGlow one"></div><div class="accessGlow two"></div><div class="accessCard"><div class="accessIcon">🎡</div><div class="eyebrow">Private Orlando space</div><h1>Welcome to Orlando</h1><p>Enter the shared access PIN to view plans, photographs and food reviews.</p><form id="accessForm"><label>Access PIN</label><input name="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" required autocomplete="off" placeholder="6-digit PIN" autofocus><button class="primary" type="submit">Unlock Orlando</button><div id="accessError" class="accessError"></div></form></div></div>`}
 async function unlockApp(e){e.preventDefault();const pin=new FormData(e.target).get('pin');const button=e.target.querySelector('button');button.disabled=true;button.textContent='Checking…';const {data,error}=await supabase.rpc('verify_access_pin',{p_pin:pin});if(error||data!==true){button.disabled=false;button.textContent='Unlock Orlando';const box=$('#accessError');if(box)box.textContent='That PIN is not correct. Please try again.';return}localStorage.setItem('orlando-access','granted');unlocked=true;render();loadSchedule()}
-function header(){return `<header class="hero"><div class="heroTop"><span class="tag">✨ 🏰 Orlando 2026</span></div><h1>Orlando</h1><div class="dates">📅 14 August – 3 September 2026</div><div class="heroFireworks">🎆 🎇</div>
+function header(){return `<header class="hero"><h1>Orlando</h1><div class="dates">📅 14 August – 3 September 2026</div>
 
 <div class="heroCoaster">🎢</div>
 <div class="heroCastle">🏰</div></header>`}function nav(){return `<nav class="tabs"><button data-tab="plans" class="${tab==='plans'?'on':''}">📍 Plans</button><button data-tab="photos" class="${tab==='photos'?'on':''}">📸 Photos</button><button data-tab="food" class="${tab==='food'?'on':''}">🍽️ Food</button></nav>`}
@@ -195,7 +195,30 @@ ${configured
 
 }
 function setupNote(){return configured?'':`<div class="setup"><b>Preview mode:</b> Connect Supabase using the two Vercel environment variables to activate shared uploads.</div>`}
-function photosView(){return `<main>${setupNote()}<div class="galleryHead"><div><div class="eyebrow">Shared memories</div><h2 class="pageTitle" style="margin-bottom:0">Photo gallery</h2></div><button class="roundAdd" data-add="general">＋</button></div><p style="color:#64748b;font-size:13px">Everyone with the link can view, upload and download.<div class="filters2">
+function photosView(){return `<main>${setupNote()}<div class="galleryHead"><div><div class="eyebrow">Shared memories</div><h2 class="pageTitle" style="margin-bottom:0">Photo gallery</h2><div style="margin-top:8px;color:#64748b;font-size:12px">
+
+📸 ${photos.length} photos
+
+<br>
+
+💾 ${formatBytes(storageUsed())} / 1024 MB used
+
+</div>
+
+<div class="storageBar">
+
+  <i
+    style="width:${
+      Math.min(
+        100,
+        storageUsed() /
+        (1024*1024*1024) *
+        100
+      )
+    }%"
+  ></i>
+
+</div></div><button class="roundAdd" data-add="general">＋</button></div><p style="color:#64748b;font-size:13px">Everyone with the link can view, upload and download.<div class="filters2">
 
 <button
   data-photo-filter="all"
@@ -537,7 +560,13 @@ Save booking
 </div>
 `;
 }
-function uploadModal(kind){const food=kind==='food';return `<div class="modal"><div class="sheet"><button class="close" data-close>×</button><h2>${food?'🍽️ Add food review':'📸 Add a memory'}</h2><form id="uploadForm"><label>Photo</label><input name="file" type="file" accept="image/*" required><label>Who is posting?</label><select name="family"><option>Peterborough Jacksons</option><option>St Helens Jacksons</option><option>Both families</option></select>${food?`<label>Restaurant or location</label><input name="restaurant" required placeholder="e.g. Homecomin’"><label>Dish or drink</label><input name="dish" required placeholder="e.g. Fried chicken"><label>Star rating</label><div class="starPicker">${[1,2,3,4,5].map(n=>`<button type="button" data-rating="${n}" class="${n<=rating?'on':''}">★</button>`).join('')}</div><label>Review</label><textarea name="notes" placeholder="What made it great?"></textarea>`:`<label>Caption</label><textarea name="caption" placeholder="What’s happening?"></textarea>`}<button class="primary" type="submit">Upload for everyone</button><div id="progress"></div></form></div></div>`}
+function uploadModal(kind){const food=kind==='food';return `<div class="modal"><div class="sheet"><button class="close" data-close>×</button><h2>${food?'🍽️ Add food review':'📸 Add a memory'}</h2><form id="uploadForm"><label>Photo</label><input
+  name="file"
+  type="file"
+  accept="image/*"
+  multiple
+  required
+><label>Who is posting?</label><select name="family"><option>Peterborough Jacksons</option><option>St Helens Jacksons</option><option>Both families</option></select>${food?`<label>Restaurant or location</label><input name="restaurant" required placeholder="e.g. Homecomin’"><label>Dish or drink</label><input name="dish" required placeholder="e.g. Fried chicken"><label>Star rating</label><div class="starPicker">${[1,2,3,4,5].map(n=>`<button type="button" data-rating="${n}" class="${n<=rating?'on':''}">★</button>`).join('')}</div><label>Review</label><textarea name="notes" placeholder="What made it great?"></textarea>`:`<label>Caption</label><textarea name="caption" placeholder="What’s happening?"></textarea>`}<button class="primary" type="submit">Upload for everyone</button><div id="progress"></div></form></div></div>`}
 function editModal(){const d=schedule.find(x=>x.date===editing.date),key=editing.family==='peterborough'?'p':'s',detailsKey=key==='p'?'pDetails':'sDetails';return `<div class="modal"><div class="sheet"><button class="close" data-close-edit>×</button><h2>✏️ Edit ${editing.family==='peterborough'?families.peterborough:families.sthelens}</h2><p class="editContext">${fmt(editing.date)} · ${slotNames[editing.slot]}</p><form id="editForm"><label>Activity or location</label><input name="location" required value="${esc(d[key][editing.slot])}" placeholder="e.g. EPCOT"><label>Details or time</label><textarea name="details" placeholder="Optional details">${esc(d[detailsKey]?.[editing.slot]||'')}</textarea><label>Universal editing PIN</label><input name="pin" type="password" inputmode="numeric" required autocomplete="off" placeholder="6-digit PIN"><button class="primary" type="submit">Save for everyone</button></form></div></div>`}
 function render(){if(!unlocked){document.querySelector('#app').innerHTML=accessScreen();const access=$('#accessForm');if(access)access.onsubmit=unlockApp;return}document.querySelector('#app').innerHTML=`<div class="shell">${header()}${tab==='plans'?plans():tab==='photos'?photosView():foodView()}${nav()}</div>${modal?uploadModal(modal):''}
 ${editing?editModal():''}
@@ -972,8 +1001,123 @@ category:
 
 }
 async function loadPhotos(){if(!configured)return;loading=true;render();const {data,error}=await supabase.from('trip_photos').select('*').order('created_at',{ascending:false});loading=false;if(error)toast(error.message);else photos=data||[];render()}
-async function resize(file){const bitmap=await createImageBitmap(file);const max=1800,s=Math.min(1,max/Math.max(bitmap.width,bitmap.height));const c=document.createElement('canvas');c.width=Math.round(bitmap.width*s);c.height=Math.round(bitmap.height*s);c.getContext('2d').drawImage(bitmap,0,0,c.width,c.height);return await new Promise(r=>c.toBlob(r,'image/jpeg',.84))}
-async function upload(e){e.preventDefault();const fd=new FormData(e.target),file=fd.get('file');if(!file?.size)return;try{$('#progress').innerHTML='<div class="progress"><i style="width:25%"></i></div>';const blob=await resize(file);const path=`${modal}/${Date.now()}-${crypto.randomUUID()}.jpg`;let q=await supabase.storage.from('trip-photos').upload(path,blob,{contentType:'image/jpeg'});if(q.error)throw q.error;$('#progress').innerHTML='<div class="progress"><i style="width:75%"></i></div>';const row={kind:modal,storage_path:path,family_name:fd.get('family'),caption:fd.get('caption')||null,restaurant:fd.get('restaurant')||null,dish:fd.get('dish')||null,rating:modal==='food'?rating:null,notes:fd.get('notes')||null};q=await supabase.from('trip_photos').insert(row);if(q.error)throw q.error;modal=null;toast('Uploaded for everyone');await loadPhotos()}catch(err){toast(err.message||'Upload failed')}}
+async function resize(
+  file,
+  maxSize = 1400,
+  quality = .82
+){
+
+  const bitmap =
+    await createImageBitmap(file);
+
+  const scale =
+    Math.min(
+      1,
+      maxSize /
+      Math.max(
+        bitmap.width,
+        bitmap.height
+      )
+    );
+
+  const canvas =
+    document.createElement('canvas');
+
+  canvas.width =
+    Math.round(bitmap.width * scale);
+
+  canvas.height =
+    Math.round(bitmap.height * scale);
+
+  canvas
+    .getContext('2d')
+    .drawImage(
+      bitmap,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+  return await new Promise(
+    resolve =>
+      canvas.toBlob(
+        resolve,
+        'image/jpeg',
+        quality
+      )
+  );
+
+}
+function storageUsed(){
+
+  return photos.reduce(
+    (total,p) =>
+      total + (p.size_bytes || 0),
+    0
+  );
+
+}
+
+function formatBytes(bytes){
+
+  const mb =
+    bytes /
+    1024 /
+    1024;
+
+  return `${mb.toFixed(1)} MB`;
+
+}
+async function upload(e){e.preventDefault();const fd =
+  new FormData(e.target);
+
+const files =
+  [...fd.getAll('file')]
+    .filter(f => f?.size);
+
+if(files.length > 20){
+
+  toast(
+    'Maximum 20 photos per upload'
+  );
+
+  return;
+
+}if(!file?.size)return;try{$('#progress').innerHTML='<div class="progress"><i style="width:25%"></i></div>';const blob =
+  await resize(
+
+    file,
+
+    modal === 'food'
+      ? 1000
+      : 1400,
+
+    modal === 'food'
+      ? .68
+      : .82
+
+  );const path=`${modal}/${Date.now()}-${crypto.randomUUID()}.jpg`;let q=await supabase.storage.from('trip-photos').upload(path,blob,{contentType:'image/jpeg'});if(q.error)throw q.error;$('#progress').innerHTML='<div class="progress"><i style="width:75%"></i></div>';const row={
+
+  kind:modal,
+
+  storage_path:path,
+
+  size_bytes:blob.size,
+
+  family_name:fd.get('family'),
+
+  caption:fd.get('caption')||null,
+
+  restaurant:fd.get('restaurant')||null,
+
+  dish:fd.get('dish')||null,
+
+  rating:modal==='food'?rating:null,
+
+  notes:fd.get('notes')||null
+
+};q=await supabase.from('trip_photos').insert(row);if(q.error)throw q.error;modal=null;toast('Uploaded for everyone');await loadPhotos()}catch(err){toast(err.message||'Upload failed')}}
 function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.append(t);setTimeout(()=>t.remove(),3500)}
 render();
 if(configured&&unlocked){
