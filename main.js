@@ -872,9 +872,10 @@ ${
 </div>
 
 <a
-  class="download"
-  href="${photoUrl(photoToEdit)}"
- y:block;
+hotoUrl(photoToEdit)}  target="_blank"
+  download
+  style="
+    display:block;
     margin:15px 0;
     font-weight:700;
   "
@@ -989,10 +990,17 @@ ${
 
 </div>
 
-${photoUrl(foodToEdit)}  download
+<a
+  class="download"
+  href="${photoUrl(foodToEdit)}"
+  target;
+    margin:15px 0;
+    font-weight:700;
+  "
 >
 ↧ Open / Download Original
 </a>
+
 
 <button
   class="primary"
