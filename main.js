@@ -372,6 +372,20 @@ St Helens
     )
 ).length?'':'<div class="empty">📸<br><b>No trip photos yet</b><br>Add the first Orlando memory.</div>'}`}</main>`}
 function photoUrl(p){return supabase?.storage.from('trip-photos').getPublicUrl(p.storage_path).data.publicUrl||''}
+function hasReacted(
+  photoId,
+  reaction
+){
+
+  return reactions.some(
+    r =>
+      r.photo_id === photoId &&
+      r.profile_name === currentUser &&
+      r.reaction === reaction
+  );
+
+}
+
 function reactionCount(
   photoId,
   reaction
@@ -390,7 +404,14 @@ function photoCard(p){const u=photoUrl(p);return `<article
 ><img src="${u}" alt="${esc(p.caption||'Orlando photo')}" loading="lazy"><div class="photoInfo"><b>${esc(p.caption||'Orlando memory')}</b><div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><div class="likesRow">
 
 <button
-  class="reactionChip"
+  class="reactionChip ${
+  hasReacted(
+    p.id,
+    'love'
+  )
+    ? 'active'
+    : ''
+}"
   data-react-photo="${p.id}"
   data-react-type="love"
 >
@@ -398,16 +419,28 @@ function photoCard(p){const u=photoUrl(p);return `<article
 </button>
 
 <button
-  class="reactionChip"
-  data-react-photo="${p.id}"
+class="reactionChip ${
+  hasReacted(
+    p.id,
+    'funny'
+  )
+    ? 'active'
+    : ''
+}"  data-react-photo="${p.id}"
   data-react-type="funny"
 >
 😂 ${reactionCount(p.id,'funny')}
 </button>
 
 <button
-  class="reactionChip"
-  data-react-photo="${p.id}"
+class="reactionChip ${
+  hasReacted(
+    p.id,
+    'awesome'
+  )
+    ? 'active'
+    : ''
+}"  data-react-photo="${p.id}"
   data-react-type="awesome"
 >
 🤩 ${reactionCount(p.id,'awesome')}
