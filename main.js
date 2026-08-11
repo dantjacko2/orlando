@@ -1622,13 +1622,27 @@ async function createProfile(e){
 
       });
 
-  if(error){
+ if(error){
+
+  if(
+    error.message
+      .toLowerCase()
+      .includes('duplicate')
+  ){
+
+    toast(
+      'That profile is already in use. Please add your surname.'
+    );
+
+  }else{
 
     toast(error.message);
 
-    return;
-
   }
+
+  return;
+
+}
 
   currentUser = name;
 
