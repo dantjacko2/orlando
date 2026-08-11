@@ -34,6 +34,8 @@ let weatherData={},
     bookings=[],
     bookingModal=null,
     bookingToEdit=null,
+photoToEdit=null,
+foodToEdit=null,
     tab='plans',
     selected=getDefaultDate(),
     modal=null,
@@ -257,7 +259,10 @@ St Helens
     )
 ).length?'':'<div class="empty">📸<br><b>No trip photos yet</b><br>Add the first Orlando memory.</div>'}`}</main>`}
 function photoUrl(p){return supabase?.storage.from('trip-photos').getPublicUrl(p.storage_path).data.publicUrl||''}
-function photoCard(p){const u=photoUrl(p);return `<article class="photoCard"><img src="${u}" alt="${esc(p.caption||'Orlando photo')}" loading="lazy"><div class="photoInfo"><b>${esc(p.caption||'Orlando memory')}</b><div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><a class="download" href="${u}" target="_blank" download>↧ Open / download</a></div></article>`}
+function photoCard(p){const u=photoUrl(p);return `<article
+  class="photoCard"
+  data-photo-id="${p.id}"
+><img src="${u}" alt="${esc(p.caption||'Orlando photo')}" loading="lazy"><div class="photoInfo"><b>${esc(p.caption||'Orlando memory')}</b><div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><a class="download" href="${u}" target="_blank" download>↧ Open / download</a></div></article>`}
 function foodView(){
 
   const items = photos.filter(
@@ -567,11 +572,141 @@ function uploadModal(kind){const food=kind==='food';return `<div class="modal"><
   multiple
   required
 ><label>Who is posting?</label><select name="family"><option>Peterborough Jacksons</option><option>St Helens Jacksons</option><option>Both families</option></select>${food?`<label>Restaurant or location</label><input name="restaurant" required placeholder="e.g. Homecomin’"><label>Dish or drink</label><input name="dish" required placeholder="e.g. Fried chicken"><label>Star rating</label><div class="starPicker">${[1,2,3,4,5].map(n=>`<button type="button" data-rating="${n}" class="${n<=rating?'on':''}">★</button>`).join('')}</div><label>Review</label><textarea name="notes" placeholder="What made it great?"></textarea>`:`<label>Caption</label><textarea name="caption" placeholder="What’s happening?"></textarea>`}<button class="primary" type="submit">Upload for everyone</button><div id="progress"></div></form></div></div>`}
+function photoEditModal(){
+
+  return `
+<div class="modal">
+
+<div class="sheet">
+
+<button
+  class="close"
+  data-close-photo
+>
+×
+</button>
+
+<h2>
+📸 Edit Photo
+</h2>
+
+<form id="photoEditForm">
+
+<label>
+Caption
+</label>
+
+<textarea name="caption">
+${esc(photoToEdit.caption || '')}
+</textarea>
+
+<button
+  class="primary"
+  type="submit"
+>
+Save
+</button>
+
+<button
+  type="button"
+  id="deletePhotoBtn"
+  class="primary"
+  style="
+    background:#b91c1c;
+    margin-top:10px
+  "
+>
+Delete Photo
+</button>
+
+</form>
+
+</div>
+
+</div>
+`;
+
+}
+function foodEditModal(){
+
+  return `
+<div class="modal">
+
+<div class="sheet">
+
+<button
+  class="close"
+  data-close-food
+>
+×
+</button>
+
+<h2>
+🍽️ Edit Food Review
+</h2>
+
+<form id="foodEditForm">
+
+<label>
+Restaurant
+</label>
+
+<input
+  name="restaurant"
+  value="${esc(foodToEdit.restaurant || '')}"
+>
+
+<label>
+Dish
+</label>
+
+<input
+  name="dish"
+  value="${esc(foodToEdit.dish || '')}"
+>
+
+<label>
+Review
+</label>
+
+<textarea name="notes">
+${esc(foodToEdit.notes || '')}
+</textarea>
+
+<button
+  class="primary"
+  type="submit"
+>
+Save
+</button>
+
+<button
+  type="button"
+  id="deleteFoodBtn"
+  class="primary"
+  style="
+    background:#b91c1c;
+    margin-top:10px
+  "
+>
+Delete Review
+</button>
+
+</form>
+
+</div>
+
+</div>
+`;
+
+}
 function editModal(){const d=schedule.find(x=>x.date===editing.date),key=editing.family==='peterborough'?'p':'s',detailsKey=key==='p'?'pDetails':'sDetails';return `<div class="modal"><div class="sheet"><button class="close" data-close-edit>×</button><h2>✏️ Edit ${editing.family==='peterborough'?families.peterborough:families.sthelens}</h2><p class="editContext">${fmt(editing.date)} · ${slotNames[editing.slot]}</p><form id="editForm"><label>Activity or location</label><input name="location" required value="${esc(d[key][editing.slot])}" placeholder="e.g. EPCOT"><label>Details or time</label><textarea name="details" placeholder="Optional details">${esc(d[detailsKey]?.[editing.slot]||'')}</textarea><label>Universal editing PIN</label><input name="pin" type="password" inputmode="numeric" required autocomplete="off" placeholder="6-digit PIN"><button class="primary" type="submit">Save for everyone</button></form></div></div>`}
 function render(){if(!unlocked){document.querySelector('#app').innerHTML=accessScreen();const access=$('#accessForm');if(access)access.onsubmit=unlockApp;return}document.querySelector('#app').innerHTML=`<div class="shell">${header()}${tab==='plans'?plans():tab==='photos'?photosView():foodView()}${nav()}</div>${modal?uploadModal(modal):''}
 ${editing?editModal():''}
 ${bookingModal?bookingModalView():''}
-${bookingToEdit?bookingEditModal():''}`;bind()}
+${bookingToEdit?bookingEditModal():''}
+${photoToEdit?photoEditModal():''}
+${foodToEdit?foodEditModal():''}`;bind()}
 function bind(){
 
   document.querySelectorAll('[data-tab]').forEach(b=>{
@@ -772,6 +907,43 @@ document
   };
 
 });
+  document
+  .querySelectorAll('[data-photo-id]')
+  .forEach(card=>{
+
+    card.onclick=()=>{
+
+      photoToEdit =
+        photos.find(
+          p =>
+            String(p.id) ===
+            card.dataset.photoId
+        );
+
+      render();
+
+    };
+
+  });
+
+document
+  .querySelectorAll('[data-food-id]')
+  .forEach(card=>{
+
+    card.onclick=()=>{
+
+      foodToEdit =
+        photos.find(
+          p =>
+            String(p.id) ===
+            card.dataset.foodId
+        );
+
+      render();
+
+    };
+
+  });
   const form=$('#uploadForm');
   if(form){
     form.onsubmit=upload;
@@ -796,6 +968,33 @@ if(editBookingForm){
     updateBooking;
 
 }
+document
+  .querySelectorAll('[data-close-photo]')
+  .forEach(btn=>{
+
+    btn.onclick=()=>{
+
+      photoToEdit=null;
+
+      render();
+
+    };
+
+  });
+
+document
+  .querySelectorAll('[data-close-food]')
+  .forEach(btn=>{
+
+    btn.onclick=()=>{
+
+      foodToEdit=null;
+
+      render();
+
+    };
+
+  });
 
 const deleteBtn=
   $('#deleteBookingBtn');
@@ -1103,11 +1302,11 @@ async function upload(e){
           file,
 
           modal === 'food'
-            ? 1000
+            ? 800
             : 1400,
 
           modal === 'food'
-            ? .68
+            ? .60
             : .82
 
         );
