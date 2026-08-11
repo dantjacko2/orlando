@@ -174,7 +174,7 @@ Create Profile
 }
 function accessScreen(){return `<div class="accessGate"><div class="accessGlow one"></div><div class="accessGlow two"></div><div class="accessCard"><div class="accessIcon">🎡</div><div class="eyebrow">Private Orlando space</div><h1>Welcome to Orlando</h1><p>Enter the shared access PIN to view plans, photographs and food reviews.</p><form id="accessForm"><label>Access PIN</label><input name="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" required autocomplete="off" placeholder="6-digit PIN" autofocus><button class="primary" type="submit">Unlock Orlando</button><div id="accessError" class="accessError"></div></form></div></div>`}
 async function unlockApp(e){e.preventDefault();const pin=new FormData(e.target).get('pin');const button=e.target.querySelector('button');button.disabled=true;button.textContent='Checking…';const {data,error}=await supabase.rpc('verify_access_pin',{p_pin:pin});if(error||data!==true){button.disabled=false;button.textContent='Unlock Orlando';const box=$('#accessError');if(box)box.textContent='That PIN is not correct. Please try again.';return}localStorage.setItem('orlando-access','granted');unlocked=true;render();loadSchedule()}
-function header(){return `<header class="hero"><h1>Orlando</h1><div class="dates">📅 14 August – 3 September 2026</div>
+function header(){return `<header class="hero"><h1>Orlando</h1>
 
 <button
   class="profileBadge"
