@@ -610,6 +610,7 @@ Save
 <button
   type="button"
   id="deletePhotoBtn"
+  onclick="alert('INLINE CLICK WORKS')"
   class="primary"
   style="
     background:#b91c1c;
