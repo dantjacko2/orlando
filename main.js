@@ -996,14 +996,19 @@ function render(){if(!unlocked){document.querySelector('#app').innerHTML=accessS
 
   return;
 
-}document.querySelector('#app').innerHTML=`<div class="shell">${header()}${tab==='plans'?plans():tab==='photos'?photosView():foodView()}${nav()}</div>${modal?uploadModal(modal):''}
+}document.querySelector('#app').innerHTML'=<div class="shell">${header()}${tab==='plans'?plans():tab==='photos'?photosView():foodView()}${nav()}</div>${modal?uploadModal(modal):''}
 ${editing?editModal():''}
 ${bookingModal?bookingModalView():''}
 ${bookingToEdit?bookingEditModal():''}
 ${photoToEdit?photoEditModal():''}
 ${foodToEdit?foodEditModal():''}
-${reactionModal?reactionModalView():''};bind()}
-function bind(){const resetUserTest =
+${reactionModal?reactionModalView():''}`;
+
+bind();
+
+}
+
+{const resetUserTest =
   $('#resetUserTest');
 
 if(resetUserTest){
