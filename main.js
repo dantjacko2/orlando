@@ -1009,10 +1009,16 @@ const deletePhotoBtn =
 
 if(deletePhotoBtn){
 
-  deletePhotoBtn.onclick =
-    deletePhoto;
+  deletePhotoBtn.onclick = () => {
+
+    alert('DELETE BUTTON CLICKED');
+
+    deletePhoto();
+
+  };
 
 }
+
 const deleteBtn=
   $('#deleteBookingBtn');
 
@@ -1152,6 +1158,8 @@ async function savePhotoEdit(e){
 
 }
 async function deletePhoto(){
+
+  alert('DELETE PHOTO FUNCTION STARTED');
 
   const { error: storageError } =
     await supabase.storage
