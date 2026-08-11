@@ -1550,8 +1550,10 @@ Reaction: ${reactionType}`
         .eq('id', existing.id);
 
     alert(
-      JSON.stringify(result)
-    );
+  JSON.stringify(
+    result.error || result
+  )
+);
 
   }else{
 
@@ -1571,9 +1573,11 @@ Reaction: ${reactionType}`
 
         });
 
-    alert(
-      JSON.stringify(result)
-    );
+ alert(
+  JSON.stringify(
+    result.error || result
+  )
+);
 
   }
 
