@@ -1614,9 +1614,6 @@ if(deleteBtn){
     deleteBooking;
 
 }
-
-window.onscroll =
-  setupSeenTracking;
   
 }
 
@@ -2277,78 +2274,6 @@ function markFoodSeen(id){
 render();
 
   }
-
-}
-
-function setupSeenTracking(){
-
-  const threshold =
-    window.innerHeight * 0.75;
-
-  document
-    .querySelectorAll(
-      '[data-photo-id]'
-    )
-    .forEach(card=>{
-
-      const img =
-        card.querySelector('img');
-
-      if(!img) return;
-
-      const rect =
-  img.getBoundingClientRect();
-
-const triggerLine =
-  window.innerHeight * 0.75;
-
-const halfwayDownImage =
-  rect.top +
-  (rect.height / 2);
-
-if(
-  halfwayDownImage <
-  triggerLine
-){
-
-        markPhotoSeen(
-          card.dataset.photoId
-        );
-
-      }
-
-    });
-
-  document
-    .querySelectorAll(
-      '[data-food-id]'
-    )
-    .forEach(card=>{
-
-      const img =
-        card.querySelector('img');
-
-      if(!img) return;
-
-      const rect =
-        img.getBoundingClientRect();
-
-      const halfwayPoint =
-        rect.top +
-        (rect.height / 2);
-
-      if(
-        halfwayPoint <
-        threshold
-      ){
-
-        markFoodSeen(
-          card.dataset.foodId
-        );
-
-      }
-
-    });
 
 }
 
