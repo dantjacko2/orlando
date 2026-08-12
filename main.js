@@ -41,6 +41,7 @@ let reactions = [];
 
 let weatherData={},
     bookings=[],
+  confirmModal=null,
     bookingModal=null,
     bookingToEdit=null,
 photoToEdit=null,
@@ -886,6 +887,48 @@ Save booking
 </div>
 `;
 }
+function confirmModalView(){
+
+  return `
+<div class="modal">
+
+<div class="sheet">
+
+<h2>
+⚠️ Confirm
+</h2>
+
+<p>
+${confirmModal.message}
+</p>
+
+<div style="
+  display:flex;
+  gap:10px;
+">
+<button
+  type="button"
+  id="cancelConfirmBtn"
+>
+Cancel
+</button>
+
+<button
+  type="button"
+  class="primary"
+  id="acceptConfirmBtn"
+>
+Delete
+</button>
+
+</div>
+
+</div>
+
+</div>
+`;
+
+}
 function uploadModal(kind){const food=kind==='food';return `<div class="modal"><div class="sheet"><button class="close" data-close>×</button><h2>${food?'🍽️ Add food review':'📸 Add a memory'}</h2><form id="uploadForm"><label>Photo</label><input
   name="file"
   type="file"
@@ -1137,6 +1180,7 @@ ${bookingModal?bookingModalView():''}
 ${bookingToEdit?bookingEditModal():''}
 ${photoToEdit?photoEditModal():''}
 ${foodToEdit?foodEditModal():''}
+${confirmModal?confirmModalView():''}
 `;
 
 bind();
@@ -1554,7 +1598,22 @@ if(deletePhotoBtn){
 
   deletePhotoBtn.onclick = () => {
 
-    deletePhoto();
+    confirmModal = {
+
+      message:
+        'Are you sure you want to permanently delete this photo?',
+
+      action: () => {
+
+        confirmModal = null;
+
+        deletePhoto();
+
+      }
+
+    };
+
+    render();
 
   };
 
@@ -1566,7 +1625,22 @@ if(deleteFoodBtn){
 
   deleteFoodBtn.onclick = () => {
 
-    deleteFood();
+    confirmModal = {
+
+      message:
+        'Are you sure you want to permanently delete this food review?',
+
+      action: () => {
+
+        confirmModal = null;
+
+        deleteFood();
+
+      }
+
+    };
+
+    render();
 
   };
 
@@ -1598,6 +1672,36 @@ if(switchProfileBtn){
   };
 
 }  
+  const cancelConfirmBtn =
+  $('#cancelConfirmBtn');
+
+if(cancelConfirmBtn){
+
+  cancelConfirmBtn.onclick = () => {
+
+    confirmModal = null;
+
+    render();
+
+  };
+
+}
+
+const acceptConfirmBtn =
+  $('#acceptConfirmBtn');
+
+if(
+  acceptConfirmBtn &&
+  confirmModal
+){
+
+  acceptConfirmBtn.onclick = () => {
+
+    confirmModal.action();
+
+  };
+
+}
 const deleteBtn=
   $('#deleteBookingBtn');
 
