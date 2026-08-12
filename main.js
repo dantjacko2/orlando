@@ -188,12 +188,20 @@ function header(){return `<header class="hero"><h1>Orlando</h1>
 <div class="heroCoaster">🎢</div>
 <div class="heroCastle">🏰</div></header>`}function nav(){
 
+  const photosLastViewed =
+    getPhotosLastViewed();
+
+  const foodLastViewed =
+    getFoodLastViewed();
+
   const photoCount =
     photos.filter(
       p =>
         p.kind === 'general' &&
-        !getSeenPhotos().includes(
-          String(p.id)
+        (
+          !photosLastViewed ||
+          p.created_at >
+          photosLastViewed
         )
     ).length;
 
@@ -201,8 +209,10 @@ function header(){return `<header class="hero"><h1>Orlando</h1>
     photos.filter(
       p =>
         p.kind === 'food' &&
-        !getSeenFood().includes(
-          String(p.id)
+        (
+          !foodLastViewed ||
+          p.created_at >
+          foodLastViewed
         )
     ).length;
 
@@ -221,13 +231,11 @@ function header(){return `<header class="hero"><h1>Orlando</h1>
   class="${tab==='photos'?'on':''}"
 >
 📸 Photos
-
 ${
   photoCount
     ? `<span class="tabBadge">${photoCount}</span>`
     : ''
 }
-
 </button>
 
 <button
@@ -235,13 +243,11 @@ ${
   class="${tab==='food'?'on':''}"
 >
 🍽️ Food
-
 ${
   foodCount
     ? `<span class="tabBadge">${foodCount}</span>`
     : ''
 }
-
 </button>
 
 </nav>
@@ -2407,7 +2413,19 @@ async function upload(e){
 
     toast('Uploaded for everyone');
 
-    await loadPhotos();
+if(modal === 'general'){
+
+  markPhotosViewed();
+
+}
+
+if(modal === 'food'){
+
+  markFoodViewed();
+
+}
+
+await loadPhotos();
 
   }catch(err){
 
