@@ -186,7 +186,68 @@ function header(){return `<header class="hero"><h1>Orlando</h1>
 </button>
 
 <div class="heroCoaster">🎢</div>
-<div class="heroCastle">🏰</div></header>`}function nav(){return `<nav class="tabs"><button data-tab="plans" class="${tab==='plans'?'on':''}">📍 Plans</button><button data-tab="photos" class="${tab==='photos'?'on':''}">📸 Photos</button><button data-tab="food" class="${tab==='food'?'on':''}">🍽️ Food</button></nav>`}
+<div class="heroCastle">🏰</div></header>`}function nav(){
+
+  const photoCount =
+    photos.filter(
+      p =>
+        p.kind === 'general' &&
+        !getSeenPhotos().includes(
+          String(p.id)
+        )
+    ).length;
+
+  const foodCount =
+    photos.filter(
+      p =>
+        p.kind === 'food' &&
+        !getSeenFood().includes(
+          String(p.id)
+        )
+    ).length;
+
+  return `
+<nav class="tabs">
+
+<button
+  data-tab="plans"
+  class="${tab==='plans'?'on':''}"
+>
+📍 Plans
+</button>
+
+<button
+  data-tab="photos"
+  class="${tab==='photos'?'on':''}"
+>
+📸 Photos
+
+${
+  photoCount
+    ? `<span class="tabBadge">${photoCount}</span>`
+    : ''
+}
+
+</button>
+
+<button
+  data-tab="food"
+  class="${tab==='food'?'on':''}"
+>
+🍽️ Food
+
+${
+  foodCount
+    ? `<span class="tabBadge">${foodCount}</span>`
+    : ''
+}
+
+</button>
+
+</nav>
+`;
+
+}
 function overlapsFor(d){return ['m','a','e'].filter(k=>d.p[k]===d.s[k]&&d.p[k]!=="Flexible time");}
 function plans(){const d=schedule.find(x=>x.date===selected)||schedule[0], ovs=overlapsFor(d);return `<main>${setupNote()}<div class="eyebrow">Shared schedule</div><h2 class="pageTitle">Where is everyone?</h2><div class="days">${schedule.map(x=>{const [w,n]=short(x.date);return `<button class="day ${x.date===selected?'on':''}" data-date="${x.date}">${overlapsFor(x).length?'<i class="overlapDot"></i>':''}<small>${w}</small><b>${n}</b></button>`}).join('')}</div><div class="dateTitle"><b>${fmt(d.date)}</b><small>Morning · afternoon · evening</small></div>${weatherData[d.date]
 ? `
@@ -410,10 +471,31 @@ function reactionCount(
 
 }
 
-function photoCard(p){const u=photoUrl(p);return `<article
+function photoCard(p){
+
+const u=photoUrl(p);
+
+const isNew =
+  !getSeenPhotos().includes(
+    String(p.id)
+  );
+
+return `<article
   class="photoCard"
   data-photo-id="${p.id}"
-><img src="${u}" alt="${esc(p.caption||'Orlando photo')}" loading="lazy"><div class="photoInfo"><b>${esc(p.caption||'Orlando memory')}</b><div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><div class="likesRow">
+><img src="${u}" alt="${esc(p.caption||'Orlando photo')}" loading="lazy"><div class="photoInfo">
+
+${
+  isNew
+    ? `
+<div class="newBadge">
+🔴 New
+</div>
+`
+    : ''
+}
+
+<b>${esc(p.caption||'Orlando memory')}</b><div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><div class="likesRow">
 
 <button
   class="reactionChip ${
@@ -551,10 +633,31 @@ ${
 
 </main>
 `;
-}function foodCard(p){const u=photoUrl(p);return `<article
+}function foodCard(p){
+
+const u=photoUrl(p);
+
+const isNew =
+  !getSeenFood().includes(
+    String(p.id)
+  );
+
+return `<article
   class="foodCard"
   data-food-id="${p.id}"
-><img src="${u}" alt="${esc(p.dish||'Food photo')}" loading="lazy"><div class="foodBody"><div class="stars">${'★'.repeat(p.rating)}<span style="color:#e5e7eb">${'★'.repeat(5-p.rating)}</span></div><h3>${esc(p.dish||'Mystery treat')}</h3><div style="color:#7e22ce;font-weight:900;margin-top:3px">🍴 ${esc(p.restaurant||'Orlando')}</div>${p.notes?`<p>${esc(p.notes)}</p>`:''}<div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><div class="likesRow">
+><img src="${u}" alt="${esc(p.dish||'Food photo')}" loading="lazy"><div class="foodBody">
+
+${
+  isNew
+    ? `
+<div class="newBadge">
+🔴 New
+</div>
+`
+    : ''
+}
+
+<div class="stars">${'★'.repeat(p.rating)}<span style="color:#e5e7eb">${'★'.repeat(5-p.rating)}</span></div><h3>${esc(p.dish||'Mystery treat')}</h3><div style="color:#7e22ce;font-weight:900;margin-top:3px">🍴 ${esc(p.restaurant||'Orlando')}</div>${p.notes?`<p>${esc(p.notes)}</p>`:''}<div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><div class="likesRow">
 
 <button
   class="reactionChip ${
@@ -1349,6 +1452,10 @@ document
 
     card.onclick=()=>{
 
+      markPhotoSeen(
+  card.dataset.photoId
+);
+
       photoToEdit =
         photos.find(
           p =>
@@ -1367,6 +1474,10 @@ document
   .forEach(card=>{
 
     card.onclick=()=>{
+
+      markFoodSeen(
+  card.dataset.foodId
+);
 
       foodToEdit =
         photos.find(
@@ -2101,6 +2212,75 @@ function formatBytes(bytes){
   return `${mb.toFixed(1)} MB`;
 
 }
+
+function getSeenPhotos(){
+
+  return JSON.parse(
+    localStorage.getItem(
+      'seen-photos'
+    ) || '[]'
+  );
+
+}
+
+function getSeenFood(){
+
+  return JSON.parse(
+    localStorage.getItem(
+      'seen-food'
+    ) || '[]'
+  );
+
+}
+
+function markPhotoSeen(id){
+
+  const seen =
+    getSeenPhotos();
+
+  if(
+    !seen.includes(
+      String(id)
+    )
+  ){
+
+    seen.push(
+      String(id)
+    );
+
+    localStorage.setItem(
+      'seen-photos',
+      JSON.stringify(seen)
+    );
+
+  }
+
+}
+
+function markFoodSeen(id){
+
+  const seen =
+    getSeenFood();
+
+  if(
+    !seen.includes(
+      String(id)
+    )
+  ){
+
+    seen.push(
+      String(id)
+    );
+
+    localStorage.setItem(
+      'seen-food',
+      JSON.stringify(seen)
+    );
+
+  }
+
+}
+
 async function upload(e){
 
   e.preventDefault();
