@@ -310,3 +310,66 @@ linear-gradient(
   -webkit-touch-callout:none;
 
 }
+
+function nav(){
+
+  const photoCount =
+    photos.filter(
+      p =>
+        p.kind === 'general' &&
+        !getSeenPhotos().includes(
+          String(p.id)
+        )
+    ).length;
+
+  const foodCount =
+    photos.filter(
+      p =>
+        p.kind === 'food' &&
+        !getSeenFood().includes(
+          String(p.id)
+        )
+    ).length;
+
+  return `
+<nav class="tabs">
+
+<button
+  data-tab="plans"
+  class="${tab==='plans'?'on':''}"
+>
+📍 Plans
+</button>
+
+<button
+  data-tab="photos"
+  class="${tab==='photos'?'on':''}"
+>
+📸 Photos
+
+${
+  photoCount
+    ? `<span class="tabBadge">${photoCount}</span>`
+    : ''
+}
+
+</button>
+
+<button
+  data-tab="food"
+  class="${tab==='food'?'on':''}"
+>
+🍽️ Food
+
+${
+  foodCount
+    ? `<span class="tabBadge">${foodCount}</span>`
+    : ''
+}
+
+</button>
+
+</nav>
+`;
+
+}
