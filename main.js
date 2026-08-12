@@ -1452,10 +1452,6 @@ document
 
     card.onclick=()=>{
 
-      markPhotoSeen(
-  card.dataset.photoId
-);
-
       photoToEdit =
         photos.find(
           p =>
@@ -1474,10 +1470,6 @@ document
   .forEach(card=>{
 
     card.onclick=()=>{
-
-      markFoodSeen(
-  card.dataset.foodId
-);
 
       foodToEdit =
         photos.find(
@@ -1623,6 +1615,11 @@ if(deleteBtn){
 
 }
 
+setupSeenTracking();
+
+window.onscroll =
+  setupSeenTracking;
+  
 }
 
 async function loadSchedule(){if(!configured)return;const {data,error}=await supabase.from('schedule_slots').select('*');if(error){toast('Schedule connection: '+error.message);return}for(const row of data||[]){const d=schedule.find(x=>x.date===row.trip_date);if(!d)continue;const k=row.family_id==='peterborough'?'p':'s',dk=k==='p'?'pDetails':'sDetails';d[k][row.slot]=row.location;d[dk]??={m:'',a:'',e:''};d[dk][row.slot]=row.details||''}schedule.forEach(day => {
@@ -2248,10 +2245,12 @@ function markPhotoSeen(id){
       String(id)
     );
 
-    localStorage.setItem(
-      'seen-photos',
-      JSON.stringify(seen)
-    );
+   localStorage.setItem(
+  'seen-photos',
+  JSON.stringify(seen)
+);
+
+render();
 
   }
 
@@ -2273,11 +2272,82 @@ function markFoodSeen(id){
     );
 
     localStorage.setItem(
-      'seen-food',
-      JSON.stringify(seen)
-    );
+  'seen-food',
+  JSON.stringify(seen)
+);
+
+render();
 
   }
+
+}
+
+function setupSeenTracking(){
+
+  const threshold =
+    window.innerHeight * 0.75;
+
+  document
+    .querySelectorAll(
+      '[data-photo-id]'
+    )
+    .forEach(card=>{
+
+      const img =
+        card.querySelector('img');
+
+      if(!img) return;
+
+      const rect =
+        img.getBoundingClientRect();
+
+      const halfwayPoint =
+        rect.top +
+        (rect.height / 2);
+
+      if(
+        halfwayPoint <
+        threshold
+      ){
+
+        markPhotoSeen(
+          card.dataset.photoId
+        );
+
+      }
+
+    });
+
+  document
+    .querySelectorAll(
+      '[data-food-id]'
+    )
+    .forEach(card=>{
+
+      const img =
+        card.querySelector('img');
+
+      if(!img) return;
+
+      const rect =
+        img.getBoundingClientRect();
+
+      const halfwayPoint =
+        rect.top +
+        (rect.height / 2);
+
+      if(
+        halfwayPoint <
+        threshold
+      ){
+
+        markFoodSeen(
+          card.dataset.foodId
+        );
+
+      }
+
+    });
 
 }
 
