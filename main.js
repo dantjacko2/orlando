@@ -2299,16 +2299,12 @@ function setupSeenTracking(){
       if(!img) return;
 
       const rect =
-        img.getBoundingClientRect();
+  img.getBoundingClientRect();
 
-      const halfwayPoint =
-        rect.top +
-        (rect.height / 2);
-
-      if(
-        halfwayPoint <
-        threshold
-      ){
+if(
+  rect.top <
+  window.innerHeight * 0.75
+){
 
         markPhotoSeen(
           card.dataset.photoId
