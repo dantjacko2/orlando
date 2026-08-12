@@ -1615,8 +1615,6 @@ if(deleteBtn){
 
 }
 
-setupSeenTracking();
-
 window.onscroll =
   setupSeenTracking;
   
@@ -2301,9 +2299,16 @@ function setupSeenTracking(){
       const rect =
   img.getBoundingClientRect();
 
+const triggerLine =
+  window.innerHeight * 0.75;
+
+const halfwayDownImage =
+  rect.top +
+  (rect.height / 2);
+
 if(
-  rect.top <
-  window.innerHeight * 0.75
+  halfwayDownImage <
+  triggerLine
 ){
 
         markPhotoSeen(
