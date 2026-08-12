@@ -475,25 +475,10 @@ function photoCard(p){
 
 const u=photoUrl(p);
 
-const isNew =
-  !getSeenPhotos().includes(
-    String(p.id)
-  );
-
 return `<article
   class="photoCard"
   data-photo-id="${p.id}"
 ><img src="${u}" alt="${esc(p.caption||'Orlando photo')}" loading="lazy"><div class="photoInfo">
-
-${
-  isNew
-    ? `
-<div class="newBadge">
-🔴 New
-</div>
-`
-    : ''
-}
 
 <b>${esc(p.caption||'Orlando memory')}</b><div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><div class="likesRow">
 
@@ -646,16 +631,6 @@ return `<article
   class="foodCard"
   data-food-id="${p.id}"
 ><img src="${u}" alt="${esc(p.dish||'Food photo')}" loading="lazy"><div class="foodBody">
-
-${
-  isNew
-    ? `
-<div class="newBadge">
-🔴 New
-</div>
-`
-    : ''
-}
 
 <div class="stars">${'★'.repeat(p.rating)}<span style="color:#e5e7eb">${'★'.repeat(5-p.rating)}</span></div><h3>${esc(p.dish||'Mystery treat')}</h3><div style="color:#7e22ce;font-weight:900;margin-top:3px">🍴 ${esc(p.restaurant||'Orlando')}</div>${p.notes?`<p>${esc(p.notes)}</p>`:''}<div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><div class="likesRow">
 
@@ -1231,9 +1206,21 @@ if(newProfileForm){
 
       render();
 
-      if(tab!=='plans'){
-        loadPhotos();
-      }
+    if(tab==='photos'){
+
+  markPhotosViewed();
+
+}
+
+if(tab==='food'){
+
+  markFoodViewed();
+
+}
+
+if(tab!=='plans'){
+  loadPhotos();
+}
 
     };
 
@@ -2202,6 +2189,40 @@ function formatBytes(bytes){
     1024;
 
   return `${mb.toFixed(1)} MB`;
+
+}
+
+function getPhotosLastViewed(){
+
+  return localStorage.getItem(
+    `photos-last-viewed-${currentUser}`
+  ) || '';
+
+}
+
+function getFoodLastViewed(){
+
+  return localStorage.getItem(
+    `food-last-viewed-${currentUser}`
+  ) || '';
+
+}
+
+function markPhotosViewed(){
+
+  localStorage.setItem(
+    `photos-last-viewed-${currentUser}`,
+    new Date().toISOString()
+  );
+
+}
+
+function markFoodViewed(){
+
+  localStorage.setItem(
+    `food-last-viewed-${currentUser}`,
+    new Date().toISOString()
+  );
 
 }
 
