@@ -1715,7 +1715,10 @@ if(deleteBtn){
   
 }
 
-async function loadSchedule(){if(!configured)return;const {data,error}=await supabase
+async function loadSchedule(){if(!configured)return;schedule =
+  structuredClone(
+    seedSchedule
+  );const {data,error}=await supabase
   .from('schedule_slots')
   .select('*');
 
