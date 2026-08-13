@@ -1770,20 +1770,11 @@ async function saveSchedule(e){
     p_pin:fd.get('pin')
   };
 
-  alert(
-    JSON.stringify(args,null,2)
-  );
-
   const {data,error}=await supabase.rpc(
     'edit_schedule_slot',
     args
   );
-
-  alert(
-    JSON.stringify({
-      data,
-      error
-    })
+  
   );
 
   if(error){
