@@ -352,3 +352,15 @@ linear-gradient(
   font-weight:700;
 
 }
+
+.deleteAction{
+
+  background:#b91c1c !important;
+
+}
+
+.deleteAction:hover{
+
+  background:#991b1b !important;
+
+}
