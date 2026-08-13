@@ -908,6 +908,7 @@ ${confirmModal.message}
 ">
 <button
   type="button"
+  class="secondary"
   id="cancelConfirmBtn"
 >
 Cancel
@@ -915,7 +916,7 @@ Cancel
 
 <button
   type="button"
-  class="primary"
+  class="primary deleteAction"
   id="acceptConfirmBtn"
 >
 Delete
