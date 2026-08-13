@@ -895,10 +895,10 @@ function confirmModalView(){
 <div class="sheet">
 
 <h2>
-⚠️ Confirm
+🗑️ Confirm Deletion
 </h2>
 
-<p>
+<p style="margin:16px 0 24px">
 ${confirmModal.message}
 </p>
 
