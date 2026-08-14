@@ -487,7 +487,10 @@ return `<article
   class="photoCard"
 ><img
   src="${u}"
-  data-photo-view="${p.id}" alt="${esc(p.caption||'Orlando photo')}" loading="lazy"><div class="photoInfo">
+  data-photo-view="${p.id}" alt="${esc(p.caption||'Orlando photo')}" loading="lazy"><div
+  class="photoInfo"
+  data-photo-id="${p.id}"
+>
 
 <b>${esc(p.caption||'Orlando memory')}</b><div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><div class="likesRow">
 
@@ -953,8 +956,9 @@ function photoViewerModal(){
       ×
     </button>
 
-    <img
-      src="${photoUrl(photoViewertyle="
+    Viewer)}"
+      alt="Photo"
+      style="
         width:100%;
         border-radius:16px;
       "
