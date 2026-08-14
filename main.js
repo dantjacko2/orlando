@@ -960,9 +960,7 @@ function photoViewerModal(){
       ×
     </button>
 
-    <img
-      src="${url}"
-      alt="Photo"
+    ${url}      alt="Photo"
       style="
         width:100%;
         border-radius:16px;
@@ -971,7 +969,10 @@ function photoViewerModal(){
 
   </div>
 
-</div
+</div>
+`;
+
+}
 function photoEditModal(){
 
   return `
