@@ -45,6 +45,7 @@ let weatherData={},
     bookingModal=null,
     bookingToEdit=null,
 photoToEdit=null,
+photoViewer=null,
 foodToEdit=null,
     tab='plans',
     selected=getDefaultDate(),
@@ -484,8 +485,9 @@ const u=photoUrl(p);
 
 return `<article
   class="photoCard"
-  data-photo-id="${p.id}"
-><img src="${u}" alt="${esc(p.caption||'Orlando photo')}" loading="lazy"><div class="photoInfo">
+><img
+  src="${u}"
+  data-photo-view="${p.id}" alt="${esc(p.caption||'Orlando photo')}" loading="lazy"><div class="photoInfo">
 
 <b>${esc(p.caption||'Orlando memory')}</b><div class="meta">${esc(p.family_name)} · ${new Date(p.created_at).toLocaleDateString('en-GB')}</div><div class="likesRow">
 
@@ -937,6 +939,34 @@ function uploadModal(kind){const food=kind==='food';return `<div class="modal"><
   multiple
   required
 ><label>Who is posting?</label><select name="family"><option>Peterborough Jacksons</option><option>St Helens Jacksons</option><option>Both families</option></select>${food?`<label>Restaurant or location</label><input name="restaurant" required placeholder="e.g. Homecomin’"><label>Dish or drink</label><input name="dish" required placeholder="e.g. Fried chicken"><label>Star rating</label><div class="starPicker">${[1,2,3,4,5].map(n=>`<button type="button" data-rating="${n}" class="${n<=rating?'on':''}">★</button>`).join('')}</div><label>Review</label><textarea name="notes" placeholder="What made it great?"></textarea>`:`<label>Caption</label><textarea name="caption" placeholder="What’s happening?"></textarea>`}<button class="primary" type="submit">Upload for everyone</button><div id="progress"></div></form></div></div>`}
+function photoViewerModal(){
+
+  return `
+<div class="modal">
+
+<div class="sheet">
+
+<button
+  class="close"
+  data-close-viewer
+>
+×
+</button>
+
+Url(photoViewer)}"
+  style="
+    width:100%;
+    border-radius:16px;
+  "
+>
+
+</div>
+
+</div>
+`;
+
+}
+
 function photoEditModal(){
 
   return `
@@ -998,18 +1028,6 @@ ${
 }
 
 </div>
-
-<a
-hotoUrl(photoToEdit)}  target="_blank"
-  download
-  style="
-    display:block;
-    margin:15px 0;
-    font-weight:700;
-  "
->
-↧ Open / Download Original
-</a>
 
 <button
   class="primary"
@@ -1118,18 +1136,6 @@ ${
 
 </div>
 
-<a
-  class="download"
-  href="${photoUrl(foodToEdit)}"
-  target;
-    margin:15px 0;
-    font-weight:700;
-  "
->
-↧ Open / Download Original
-</a>
-
-
 <button
   class="primary"
   type="submit"
@@ -1179,6 +1185,7 @@ ${modal?uploadModal(modal):''}
 ${editing?editModal():''}
 ${bookingModal?bookingModalView():''}
 ${bookingToEdit?bookingEditModal():''}
+${photoViewer?photoViewerModal():''}
 ${photoToEdit?photoEditModal():''}
 ${foodToEdit?foodEditModal():''}
 ${confirmModal?confirmModalView():''}
@@ -1484,6 +1491,26 @@ document
   };
 
 });
+ document
+  .querySelectorAll('[data-photo-view]')
+  .forEach(img=>{
+
+    img.onclick=(e)=>{
+
+      e.stopPropagation();
+
+      photoViewer =
+        photos.find(
+          p =>
+            String(p.id) ===
+            img.dataset.photoView
+        );
+
+      render();
+
+    };
+
+  });
   document
   .querySelectorAll('[data-photo-id]')
   .forEach(card=>{
@@ -1565,6 +1592,19 @@ if(editBookingForm){
 
 }
 document
+  .querySelectorAll('[data-close-viewer]')
+  .forEach(btn=>{
+
+    btn.onclick=()=>{
+
+      photoViewer=null;
+
+      render();
+
+    };
+
+  });
+  document
   .querySelectorAll('[data-close-photo]')
   .forEach(btn=>{
 
