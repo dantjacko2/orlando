@@ -946,6 +946,8 @@ function uploadModal(kind){const food=kind==='food';return `<div class="modal"><
 ><label>Who is posting?</label><select name="family"><option>Peterborough Jacksons</option><option>St Helens Jacksons</option><option>Both families</option></select>${food?`<label>Restaurant or location</label><input name="restaurant" required placeholder="e.g. Homecomin’"><label>Dish or drink</label><input name="dish" required placeholder="e.g. Fried chicken"><label>Star rating</label><div class="starPicker">${[1,2,3,4,5].map(n=>`<button type="button" data-rating="${n}" class="${n<=rating?'on':''}">★</button>`).join('')}</div><label>Review</label><textarea name="notes" placeholder="What made it great?"></textarea>`:`<label>Caption</label><textarea name="caption" placeholder="What’s happening?"></textarea>`}<button class="primary" type="submit">Upload for everyone</button><div id="progress"></div></form></div></div>`}
 function photoViewerModal(){
 
+  const url = photoUrl(photoViewer);
+
   return `
 <div class="modal">
 
@@ -958,7 +960,8 @@ function photoViewerModal(){
       ×
     </button>
 
-    Viewer)}"
+    <img
+      src="${url}"
       alt="Photo"
       style="
         width:100%;
@@ -968,10 +971,7 @@ function photoViewerModal(){
 
   </div>
 
-</div>
-`;
-
-}
+</div
 function photoEditModal(){
 
   return `
