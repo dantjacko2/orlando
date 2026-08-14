@@ -958,7 +958,7 @@ function photoViewerModal(){
       ×
     </button>
 
-    Url(photoViewer)}"
+    Viewer)}"
       alt="Photo"
       style="
         width:100%;
