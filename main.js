@@ -946,8 +946,6 @@ function uploadModal(kind){const food=kind==='food';return `<div class="modal"><
 ><label>Who is posting?</label><select name="family"><option>Peterborough Jacksons</option><option>St Helens Jacksons</option><option>Both families</option></select>${food?`<label>Restaurant or location</label><input name="restaurant" required placeholder="e.g. Homecomin’"><label>Dish or drink</label><input name="dish" required placeholder="e.g. Fried chicken"><label>Star rating</label><div class="starPicker">${[1,2,3,4,5].map(n=>`<button type="button" data-rating="${n}" class="${n<=rating?'on':''}">★</button>`).join('')}</div><label>Review</label><textarea name="notes" placeholder="What made it great?"></textarea>`:`<label>Caption</label><textarea name="caption" placeholder="What’s happening?"></textarea>`}<button class="primary" type="submit">Upload for everyone</button><div id="progress"></div></form></div></div>`}
 function photoViewerModal(){
 
-  const imageUrl = photoUrl(photoViewer);
-
   return `
 <div class="modal">
 
@@ -961,15 +959,7 @@ function photoViewerModal(){
       ×
     </button>
 
-    ${imageUrl}}"
-      style="
-        display:block;
-        width:100%;
-        max-height:80vh;
-        object-fit:contain;
-        border-radius:16px;
-      "
-    >
+    <div id="photoViewerImage"></div>
 
   </div>
 
@@ -1601,7 +1591,45 @@ if(editBookingForm){
     updateBooking;
 
 }
-document
+const photoViewerImage =
+  $('#photoViewerImage');
+
+if(
+  photoViewerImage &&
+  photoViewer
+){
+
+  const viewerImage =
+    document.createElement('img');
+
+  viewerImage.src =
+    photoUrl(photoViewer);
+
+  viewerImage.alt =
+    photoViewer.caption ||
+    'Orlando photo';
+
+  viewerImage.style.display =
+    'block';
+
+  viewerImage.style.width =
+    '100%';
+
+  viewerImage.style.maxHeight =
+    '80vh';
+
+  viewerImage.style.objectFit =
+    'contain';
+
+  viewerImage.style.borderRadius =
+    '16px';
+
+  photoViewerImage.appendChild(
+    viewerImage
+  );
+
+}
+  document
   .querySelectorAll('[data-close-viewer]')
   .forEach(btn=>{
 
