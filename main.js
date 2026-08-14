@@ -944,30 +944,28 @@ function photoViewerModal(){
   return `
 <div class="modal">
 
-<div class="sheet">
+  <div class="sheet">
 
-<button
-  class="close"
-  data-close-viewer
->
-×
-</button>
+    <button
+      class="close"
+      data-close-viewer
+    >
+      ×
+    </button>
 
-"
-  alt="Photo"
-  style="
-    width:100%;
-    border-radius:16px;
-  "
->
+    <img
+      src="${photoUrl(photoViewertyle="
+        width:100%;
+        border-radius:16px;
+      "
+    >
 
-</div>
+  </div>
 
 </div>
 `;
 
 }
-
 function photoEditModal(){
 
   return `
