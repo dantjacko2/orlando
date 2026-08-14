@@ -487,7 +487,9 @@ return `<article
   class="photoCard"
 ><img
   src="${u}"
-  data-photo-view="${p.id}" alt="${esc(p.caption||'Orlando photo')}" loading="lazy"><div
+  data-photo-view="${p.id}" alt="${esc(p.caption||'Orlando photo')}" loading="lazy">
+  
+  <div
   class="photoInfo"
   data-photo-id="${p.id}"
 >
@@ -956,8 +958,8 @@ function photoViewerModal(){
       ×
     </button>
 
-    <{photoUrl(photoViewer)} style="
-        width:100%;
+    <img
+      photoViewer)}        width:100%;
         border-radius:16px;
       "
     >
